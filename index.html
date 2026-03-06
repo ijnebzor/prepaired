@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- PrepAIred v0.3 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
+<!-- PrepAIred v0.3.1 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
 <meta name="description" content="PrepAIred — AI-powered interview simulator. Five personalities. Real time pressure. Honest scoring. Bring your own API key.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://api.groq.com https://api.openai.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
 <title>PrepAIred — HireAId</title>
@@ -38,7 +38,7 @@ body::after {
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.012) 2px,rgba(255,255,255,0.012) 3px);
 }
 
-/* ── LANDING ── */
+/* LANDING */
 #landingPage { display:flex; flex-direction:column; min-height:100vh; }
 
 nav {
@@ -57,7 +57,6 @@ nav.scrolled { border-bottom-color:var(--border); }
 .nav-cta { background:var(--cyan); color:#000; font-family:var(--mono); font-size:11px; font-weight:700; padding:8px 20px; border-radius:4px; border:none; cursor:pointer; transition:all 0.15s; letter-spacing:0.08em; text-transform:uppercase; }
 .nav-cta:hover { background:#00ffdf; transform:translateY(-1px); }
 
-/* HERO */
 .hero { min-height:100vh; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:120px 48px 80px; position:relative; overflow:hidden; }
 .hero::before {
   content:''; position:absolute; inset:0;
@@ -95,7 +94,6 @@ nav.scrolled { border-bottom-color:var(--border); }
 .btn-ghost:hover { border-color:var(--text-dim); color:var(--text-bright); }
 .hero-note { margin-top:16px; font-family:var(--mono); font-size:10px; color:var(--text-dim); letter-spacing:0.05em; }
 
-/* FEATURES */
 .features { padding:120px 48px; border-top:1px solid var(--border); }
 .section-label { font-family:var(--mono); font-size:10px; color:var(--text-dim); letter-spacing:0.25em; text-transform:uppercase; margin-bottom:48px; display:flex; align-items:center; gap:12px; }
 .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
@@ -107,7 +105,6 @@ nav.scrolled { border-bottom-color:var(--border); }
 .feature-desc { font-size:14px; color:var(--text); line-height:1.65; }
 .feature-tag { display:inline-block; margin-top:16px; font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; border-radius:2px; }
 
-/* PHASES */
 .phases { padding:120px 48px; border-top:1px solid var(--border); background:var(--surface); }
 .phase-item { display:grid; grid-template-columns:120px 1fr; gap:40px; padding:40px 0; border-bottom:1px solid var(--border); align-items:start; }
 .phase-num { font-family:var(--mono); font-size:11px; color:var(--text-dim); letter-spacing:0.15em; text-transform:uppercase; padding-top:4px; }
@@ -118,7 +115,6 @@ nav.scrolled { border-bottom-color:var(--border); }
 .phase-pill { font-family:var(--mono); font-size:10px; color:var(--text-dim); border:1px solid var(--border2); padding:4px 10px; border-radius:3px; }
 .phase-pill.done { color:var(--green); border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.06); }
 
-/* FOOTER */
 footer { padding:48px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; }
 .footer-brand { font-family:var(--display); font-size:14px; font-weight:700; color:var(--text-bright); }
 .footer-brand span { color:var(--cyan); }
@@ -127,7 +123,7 @@ footer { padding:48px; border-top:1px solid var(--border); display:flex; align-i
 .footer-links a:hover { color:var(--text-bright); }
 .footer-copy { font-family:var(--mono); font-size:10px; color:var(--text-dim); }
 
-/* ── SETUP MODAL ── */
+/* SETUP MODAL */
 #setupModal { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.92); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px; overflow-y:auto; }
 #setupModal.open { display:flex; }
 .modal-inner { background:var(--surface); border:1px solid var(--border2); border-radius:12px; width:100%; max-width:680px; padding:40px; display:flex; flex-direction:column; gap:28px; animation:modalIn 0.25s ease; margin:auto; }
@@ -150,13 +146,56 @@ footer { padding:48px; border-top:1px solid var(--border); display:flex; align-i
 .provider-info.visible { display:block; }
 .provider-info a { color:var(--cyan); text-decoration:none; }
 
+/* API KEY INPUT + VALIDATOR */
 .api-input-wrap { position:relative; }
-.api-input,.setup-input { width:100%; background:var(--bg); border:1px solid var(--border2); color:var(--text); font-family:var(--mono); font-size:12px; padding:11px 42px 11px 14px; border-radius:6px; outline:none; transition:border-color 0.2s; }
+.api-input,.setup-input {
+  width:100%; background:var(--bg); border:1px solid var(--border2);
+  color:var(--text); font-family:var(--mono); font-size:12px;
+  padding:11px 72px 11px 14px; border-radius:6px; outline:none; transition:border-color 0.2s;
+}
 .setup-input { padding:11px 14px; }
 .api-input:focus,.setup-input:focus { border-color:var(--cyan); }
 .api-input::placeholder,.setup-input::placeholder { color:var(--text-dim); }
-.toggle-vis { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:13px; transition:color 0.15s; }
+.api-input.valid { border-color:var(--green); }
+.api-input.invalid { border-color:var(--red); }
+
+.api-input-actions {
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  display:flex; align-items:center; gap:8px;
+}
+.toggle-vis { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:13px; transition:color 0.15s; padding:2px; }
 .toggle-vis:hover { color:var(--cyan); }
+
+/* Key status indicator */
+.key-status {
+  display:flex; align-items:center; gap:8px;
+  padding:10px 14px; border-radius:6px;
+  font-family:var(--mono); font-size:11px;
+  border:1px solid var(--border2);
+  background:var(--bg);
+  transition:all 0.3s;
+  min-height:40px;
+}
+.key-status.idle { color:var(--text-dim); border-color:var(--border2); }
+.key-status.checking { color:var(--yellow); border-color:rgba(234,179,8,0.3); background:rgba(234,179,8,0.04); }
+.key-status.valid { color:var(--green); border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.06); }
+.key-status.invalid { color:var(--red); border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); }
+.key-status-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.key-status.idle .key-status-dot { background:var(--text-dim); }
+.key-status.checking .key-status-dot { background:var(--yellow); animation:blink 0.8s ease infinite; }
+.key-status.valid .key-status-dot { background:var(--green); }
+.key-status.invalid .key-status-dot { background:var(--red); }
+
+/* Systems-go checklist */
+.systems-go {
+  display:none; flex-direction:column; gap:6px;
+  padding:14px 16px; border-radius:8px;
+  background:rgba(34,197,94,0.05); border:1px solid rgba(34,197,94,0.2);
+}
+.systems-go.visible { display:flex; }
+.sg-row { display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:11px; color:var(--text); }
+.sg-check { color:var(--green); font-size:12px; flex-shrink:0; }
+.sg-title { font-family:var(--display); font-size:13px; font-weight:700; color:var(--green); margin-bottom:4px; display:flex; align-items:center; gap:8px; }
 
 .setup-textarea { width:100%; background:var(--bg); border:1px solid var(--border2); color:var(--text); font-family:var(--mono); font-size:12px; padding:12px 14px; border-radius:6px; outline:none; transition:border-color 0.2s; resize:vertical; min-height:100px; line-height:1.6; }
 .setup-textarea:focus { border-color:var(--cyan); }
@@ -178,10 +217,18 @@ footer { padding:48px; border-top:1px solid var(--border); display:flex; align-i
 .toggle-btn.fmt-active { border-color:var(--cyan); background:rgba(0,229,204,0.06); color:var(--cyan); }
 .toggle-btn.diff-active { border-color:var(--orange); background:rgba(249,115,22,0.06); color:var(--orange); }
 
-.begin-btn { background:var(--cyan); color:#000; border:none; padding:16px; border-radius:8px; font-family:var(--display); font-size:16px; font-weight:700; cursor:pointer; transition:all 0.15s; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; }
-.begin-btn:hover { background:#00ffdf; transform:translateY(-1px); }
+.begin-btn {
+  background:var(--text-dim); color:#000; border:none; padding:16px; border-radius:8px;
+  font-family:var(--display); font-size:16px; font-weight:700; cursor:not-allowed;
+  transition:all 0.3s; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
+  opacity:0.5;
+}
+.begin-btn.ready {
+  background:var(--cyan); color:#000; cursor:pointer; opacity:1;
+}
+.begin-btn.ready:hover { background:#00ffdf; transform:translateY(-1px); }
 
-/* ── INTERVIEW ── */
+/* INTERVIEW */
 #interviewScreen { display:none; flex-direction:column; height:100vh; }
 .topbar { display:flex; align-items:center; justify-content:space-between; padding:0 20px; height:52px; border-bottom:1px solid var(--border); background:var(--bg); flex-shrink:0; }
 .topbar-brand { font-family:var(--display); font-size:16px; font-weight:800; color:var(--text-bright); }
@@ -282,7 +329,7 @@ textarea:disabled { opacity:0.4; }
 .submit-btn:disabled { background:var(--text-dim); color:var(--bg); cursor:not-allowed; }
 .input-hint { margin-top:5px; font-family:var(--mono); font-size:10px; color:var(--text-dim); }
 
-/* ── SUMMARY ── */
+/* SUMMARY */
 #summaryScreen { display:none; position:fixed; inset:0; background:var(--bg); overflow-y:auto; z-index:200; padding:40px 20px; }
 .summary-inner { max-width:760px; width:100%; margin:0 auto; }
 .summary-header { margin-bottom:48px; }
@@ -317,7 +364,7 @@ textarea:disabled { opacity:0.4; }
 </head>
 <body>
 
-<!-- ══ LANDING PAGE ══ -->
+<!-- LANDING -->
 <div id="landingPage">
   <nav id="mainNav">
     <div class="nav-brand">Prep<span>AI</span>red</div>
@@ -327,12 +374,12 @@ textarea:disabled { opacity:0.4; }
       <li><a href="https://github.com/ijnebzor/prepaired" target="_blank">GitHub</a></li>
       <li><a href="https://ijneb.dev" target="_blank">ijneb.dev</a></li>
     </ul>
-    <button class="nav-cta" onclick="openSetup()">Get PrepAIred →</button>
+    <button class="nav-cta" onclick="openSetup()">Get PrepAIred &rarr;</button>
   </nav>
 
   <section class="hero">
     <div class="hero-content">
-      <div class="hero-label">HireAId — get PrepAIred</div>
+      <div class="hero-label">HireAId &mdash; get PrepAIred</div>
       <h1 class="hero-title">
         Prep<span class="ai">AI</span>red
         <span class="sub">Interview simulation that doesn't let you off easy.</span>
@@ -342,18 +389,18 @@ textarea:disabled { opacity:0.4; }
         <span class="hero-tag green">Honest Scoring</span>
         <span class="hero-tag orange">Salary Negotiation</span>
         <span class="hero-tag purple">Career Intelligence</span>
-        <span class="hero-tag yellow">Your Key · Your Data</span>
+        <span class="hero-tag yellow">Your Key &middot; Your Data</span>
       </div>
       <p class="hero-desc">
         Five interviewer personalities. Variable time pressure. <strong>Real push-back</strong>, not gold stars for showing up.
-        Bring your own API key — runs entirely in your browser. Free tier available via Groq.
+        Bring your own API key &mdash; runs entirely in your browser. Free tier available via Groq.
         <strong>Costs pennies per session.</strong>
       </p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openSetup()"><span>Start Interview</span><span>→</span></button>
+        <button class="btn-primary" onclick="openSetup()"><span>Start Interview</span><span>&rarr;</span></button>
         <button class="btn-ghost" onclick="window.open('https://github.com/ijnebzor/prepaired','_blank')">View on GitHub</button>
       </div>
-      <div class="hero-note">Supports Anthropic Claude · OpenAI GPT-4o-mini · Groq Llama 3 (free)</div>
+      <div class="hero-note">Supports Anthropic Claude &middot; OpenAI GPT-4o-mini &middot; Groq Llama 3 (free)</div>
     </div>
   </section>
 
@@ -361,39 +408,39 @@ textarea:disabled { opacity:0.4; }
     <div class="section-label">What it does</div>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">🎭</div>
+        <div class="feature-icon">&#127917;</div>
         <div class="feature-title">5 Interviewer Personalities</div>
         <div class="feature-desc">Warm, Technical, Adversarial, HR/STAR, Curious. Each has a distinct voice and different tolerance for vague answers.</div>
-        <span class="feature-tag" style="background:rgba(0,229,204,0.08);color:var(--cyan)">Panel · 1:1</span>
+        <span class="feature-tag" style="background:rgba(0,229,204,0.08);color:var(--cyan)">Panel &middot; 1:1</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">⏱</div>
+        <div class="feature-icon">&#9201;</div>
         <div class="feature-title">Time Pressure That's Real</div>
         <div class="feature-desc">Variable timer by question type and difficulty. Relaxed for early prep. Brutal for the day before. Auto-submits when time's up.</div>
         <span class="feature-tag" style="background:rgba(249,115,22,0.08);color:var(--orange)">3 difficulty modes</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🧠</div>
+        <div class="feature-icon">&#129504;</div>
         <div class="feature-title">Knows Who You Are</div>
         <div class="feature-desc">Paste your bio, LinkedIn, or resume. The interviewer reads your background and the coaching gets specific to your actual experience.</div>
         <span class="feature-tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">Candidate Profile</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📊</div>
+        <div class="feature-icon">&#128202;</div>
         <div class="feature-title">Honest 4-Dimension Scoring</div>
         <div class="feature-desc">Structure. Confidence. Technical Depth. Consulting Readiness. A 7 means solid. A 9 means exceptional. Not inflated.</div>
         <span class="feature-tag" style="background:rgba(34,197,94,0.08);color:var(--green)">Session Summary</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔑</div>
+        <div class="feature-icon">&#128273;</div>
         <div class="feature-title">Your Key. Your Data.</div>
         <div class="feature-desc">Anthropic, OpenAI, or Groq (free tier). Nothing stored. Nothing sent anywhere except the AI API. Key cleared from memory on exit.</div>
         <span class="feature-tag" style="background:rgba(234,179,8,0.08);color:var(--yellow)">Security First</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔁</div>
+        <div class="feature-icon">&#128260;</div>
         <div class="feature-title">The Feedback Loop</div>
-        <div class="feature-desc">After the real interview — did you get the job? Your outcome (anonymised) calibrates what answers actually correlate with getting hired.</div>
+        <div class="feature-desc">After the real interview &mdash; did you get the job? Your outcome calibrates what answers actually correlate with getting hired.</div>
         <span class="feature-tag" style="background:rgba(0,229,204,0.08);color:var(--cyan)">Phase 4 Intelligence</span>
       </div>
     </div>
@@ -403,16 +450,16 @@ textarea:disabled { opacity:0.4; }
     <div class="section-label">Roadmap</div>
     <div>
       <div class="phase-item">
-        <div class="phase-num active">Phase 1 ✓<br>Phase 1.5 →</div>
+        <div class="phase-num active">Phase 1 &#10003;<br>Phase 1.5 &rarr;</div>
         <div>
           <div class="phase-title">Interview Simulator</div>
           <div class="phase-desc">Core loop live. Multi-provider API, candidate profiles, session export, outcome feedback loop.</div>
           <div class="phase-items">
             <span class="phase-pill done">5 personalities</span>
-            <span class="phase-pill done">Panel & 1:1</span>
+            <span class="phase-pill done">Panel &amp; 1:1</span>
             <span class="phase-pill done">Variable timer</span>
             <span class="phase-pill done">Honest scoring</span>
-            <span class="phase-pill done">Multi-provider (Claude · GPT · Groq)</span>
+            <span class="phase-pill done">Multi-provider</span>
             <span class="phase-pill done">Candidate profile</span>
             <span class="phase-pill done">Session export JSON</span>
             <span class="phase-pill done">Feedback loop</span>
@@ -425,7 +472,7 @@ textarea:disabled { opacity:0.4; }
           <div class="phase-title">Anyone Can Use It</div>
           <div class="phase-desc">Paste a job URL or upload a JD. AI generates role-specific questions, surfaces company sentiment and salary ranges.</div>
           <div class="phase-items">
-            <span class="phase-pill">JD ingestion (URL/PDF/paste)</span>
+            <span class="phase-pill">JD ingestion</span>
             <span class="phase-pill">AI question generation</span>
             <span class="phase-pill">Salary benchmarks</span>
             <span class="phase-pill">Company sentiment</span>
@@ -436,7 +483,7 @@ textarea:disabled { opacity:0.4; }
         <div class="phase-num">Phase 3</div>
         <div>
           <div class="phase-title">Salary Negotiation</div>
-          <div class="phase-desc">They make an offer. You counter. Coach mode surfaces your strongest moments to leverage. Market bounds based on role and performance.</div>
+          <div class="phase-desc">They make an offer. You counter. Coach mode surfaces your strongest moments to leverage.</div>
           <div class="phase-items">
             <span class="phase-pill">Offer roleplay</span>
             <span class="phase-pill">Negotiation coaching</span>
@@ -448,12 +495,11 @@ textarea:disabled { opacity:0.4; }
         <div class="phase-num">Phase 4</div>
         <div>
           <div class="phase-title">Career Intelligence</div>
-          <div class="phase-desc">Where are you in your industry? Gap analysis, pathway planning, culture fit profile — and a feedback loop that gets smarter over time.</div>
+          <div class="phase-desc">Gap analysis, pathway planning, culture fit profile &mdash; and a feedback loop that gets smarter over time.</div>
           <div class="phase-items">
             <span class="phase-pill">Career diagnostic</span>
             <span class="phase-pill">Role gap analysis</span>
             <span class="phase-pill">Pathway planner</span>
-            <span class="phase-pill">Culture fit profile</span>
             <span class="phase-pill">Outcome calibration</span>
           </div>
         </div>
@@ -464,18 +510,18 @@ textarea:disabled { opacity:0.4; }
   <footer>
     <div>
       <div class="footer-brand">Prep<span>AI</span>red</div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:4px;">HireAId — get PrepAIred.</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:4px;">HireAId &mdash; get PrepAIred.</div>
     </div>
     <div class="footer-links">
       <a href="https://github.com/ijnebzor/prepaired" target="_blank">GitHub</a>
       <a href="https://github.com/ijnebzor/prepaired/blob/main/SECURITY.md" target="_blank">Security</a>
       <a href="https://ijneb.dev" target="_blank">ijneb.dev</a>
     </div>
-    <div class="footer-copy">MIT · Built by <a href="https://ijneb.dev" style="color:var(--cyan);text-decoration:none;">Benji Zorella</a> · AI-assisted</div>
+    <div class="footer-copy">MIT &middot; Built by <a href="https://ijneb.dev" style="color:var(--cyan);text-decoration:none;">Benji Zorella</a> &middot; AI-assisted</div>
   </footer>
 </div>
 
-<!-- ══ SETUP MODAL ══ -->
+<!-- SETUP MODAL -->
 <div id="setupModal">
   <div class="modal-inner">
     <div class="modal-header">
@@ -483,7 +529,7 @@ textarea:disabled { opacity:0.4; }
         <div class="modal-title">Get Prep<span>AI</span>red</div>
         <div class="modal-subtitle">60 seconds to configure. Then it gets uncomfortable.</div>
       </div>
-      <button class="modal-close" onclick="closeSetup()">✕</button>
+      <button class="modal-close" onclick="closeSetup()">&#10005;</button>
     </div>
 
     <div class="setup-section">
@@ -493,17 +539,31 @@ textarea:disabled { opacity:0.4; }
         <button class="provider-tab" data-provider="openai" onclick="selectProvider(this)">OpenAI</button>
         <button class="provider-tab free-tag" data-provider="groq" onclick="selectProvider(this)">Groq</button>
       </div>
-      <div class="provider-info visible" id="info-anthropic">Best quality for this use case. Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — ~$0.02/session.</div>
-      <div class="provider-info" id="info-openai">GPT-4o-mini. Get a key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> — ~$0.03/session.</div>
-      <div class="provider-info" id="info-groq"><strong style="color:var(--green)">Free tier available.</strong> Llama 3 at ludicrous speed. Get a key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> — no credit card needed.</div>
+      <div class="provider-info visible" id="info-anthropic">Best quality for this use case. Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> &mdash; ~$0.02/session.</div>
+      <div class="provider-info" id="info-openai">GPT-4o-mini. Get a key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> &mdash; ~$0.03/session.</div>
+      <div class="provider-info" id="info-groq"><strong style="color:var(--green)">Free tier available.</strong> Llama 3 at ludicrous speed. Get a key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> &mdash; no credit card needed.</div>
       <div class="api-input-wrap">
-        <input type="password" class="api-input" id="apiKeyInput" placeholder="Paste your API key..." />
-        <button class="toggle-vis" onclick="toggleKeyVis()">👁</button>
+        <input type="password" class="api-input" id="apiKeyInput" placeholder="Paste your API key..." oninput="onKeyInput()" />
+        <div class="api-input-actions">
+          <button class="toggle-vis" onclick="toggleKeyVis()" title="Show/hide key">&#128065;</button>
+        </div>
+      </div>
+      <!-- Live key status -->
+      <div class="key-status idle" id="keyStatus">
+        <div class="key-status-dot"></div>
+        <span id="keyStatusText">Paste your API key to validate</span>
+      </div>
+      <!-- Systems go panel -->
+      <div class="systems-go" id="systemsGo">
+        <div class="sg-title">&#10003; Systems go</div>
+        <div class="sg-row"><span class="sg-check">&#10003;</span><span>API key validated</span></div>
+        <div class="sg-row"><span class="sg-check">&#10003;</span><span id="sgProvider">Provider ready</span></div>
+        <div class="sg-row"><span class="sg-check">&#10003;</span><span>Running in-browser &mdash; nothing stored server-side</span></div>
       </div>
     </div>
 
     <div class="setup-section">
-      <div class="setup-label">Your Profile <span style="color:var(--text-dim);font-weight:400;letter-spacing:0;">— optional, makes coaching specific</span></div>
+      <div class="setup-label">Your Profile <span style="color:var(--text-dim);font-weight:400;letter-spacing:0;">&mdash; optional, makes coaching specific</span></div>
       <div class="profile-tabs">
         <button class="profile-tab active" data-panel="skip" onclick="selectProfileTab(this)">Skip</button>
         <button class="profile-tab" data-panel="paste" onclick="selectProfileTab(this)">Paste Bio / Resume</button>
@@ -513,22 +573,22 @@ textarea:disabled { opacity:0.4; }
         <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);padding:6px 0;">Interviewer uses general context. Add your profile for coaching specific to your background.</div>
       </div>
       <div class="profile-panel" id="panel-paste">
-        <textarea class="setup-textarea" id="profileText" placeholder="Paste your LinkedIn summary, resume highlights, or bio. The interviewer will reference this in their coaching..."></textarea>
+        <textarea class="setup-textarea" id="profileText" placeholder="Paste your LinkedIn summary, resume highlights, or bio..."></textarea>
       </div>
       <div class="profile-panel" id="panel-url">
         <input type="text" class="setup-input" id="profileUrl" placeholder="https://linkedin.com/in/yourname" />
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);">We'll pull publicly available info from the URL to brief the interviewer.</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);">URL will be noted for the interviewer context.</div>
       </div>
     </div>
 
     <div class="setup-section">
       <div class="setup-label">Interviewer Personality</div>
       <div class="personality-grid">
-        <div class="p-card" data-p="warm" onclick="selectPersonality(this)"><div class="p-icon">☀️</div><div class="p-name">Warm</div></div>
-        <div class="p-card" data-p="technical" onclick="selectPersonality(this)"><div class="p-icon">🔬</div><div class="p-name">Technical</div></div>
-        <div class="p-card selected" data-p="adversarial" onclick="selectPersonality(this)"><div class="p-icon">⚔️</div><div class="p-name">Adversarial</div></div>
-        <div class="p-card" data-p="hr" onclick="selectPersonality(this)"><div class="p-icon">📋</div><div class="p-name">HR / STAR</div></div>
-        <div class="p-card" data-p="curious" onclick="selectPersonality(this)"><div class="p-icon">🔭</div><div class="p-name">Curious</div></div>
+        <div class="p-card" data-p="warm" onclick="selectPersonality(this)"><div class="p-icon">&#9728;&#65039;</div><div class="p-name">Warm</div></div>
+        <div class="p-card" data-p="technical" onclick="selectPersonality(this)"><div class="p-icon">&#128300;</div><div class="p-name">Technical</div></div>
+        <div class="p-card selected" data-p="adversarial" onclick="selectPersonality(this)"><div class="p-icon">&#9876;&#65039;</div><div class="p-name">Adversarial</div></div>
+        <div class="p-card" data-p="hr" onclick="selectPersonality(this)"><div class="p-icon">&#128203;</div><div class="p-name">HR / STAR</div></div>
+        <div class="p-card" data-p="curious" onclick="selectPersonality(this)"><div class="p-icon">&#128301;</div><div class="p-name">Curious</div></div>
       </div>
     </div>
 
@@ -536,35 +596,38 @@ textarea:disabled { opacity:0.4; }
       <div class="setup-section">
         <div class="setup-label">Format</div>
         <div class="toggle-row">
-          <button class="toggle-btn fmt-active" data-f="panel" onclick="selectFormat(this)">👥 Panel</button>
-          <button class="toggle-btn" data-f="solo" onclick="selectFormat(this)">👤 1:1</button>
+          <button class="toggle-btn fmt-active" data-f="panel" onclick="selectFormat(this)">Panel</button>
+          <button class="toggle-btn" data-f="solo" onclick="selectFormat(this)">1:1</button>
         </div>
       </div>
       <div class="setup-section">
         <div class="setup-label">Difficulty</div>
         <div class="toggle-row">
-          <button class="toggle-btn" data-d="relaxed" onclick="selectDiff(this)">🟢 Easy</button>
-          <button class="toggle-btn diff-active" data-d="realistic" onclick="selectDiff(this)">🟡 Real</button>
-          <button class="toggle-btn" data-d="brutal" onclick="selectDiff(this)">🔴 Brutal</button>
+          <button class="toggle-btn" data-d="relaxed" onclick="selectDiff(this)">Easy</button>
+          <button class="toggle-btn diff-active" data-d="realistic" onclick="selectDiff(this)">Real</button>
+          <button class="toggle-btn" data-d="brutal" onclick="selectDiff(this)">Brutal</button>
         </div>
       </div>
     </div>
 
-    <button class="begin-btn" onclick="beginInterview()"><span>Begin Interview</span><span>→</span></button>
+    <button class="begin-btn" id="beginBtn" onclick="beginInterview()">
+      <span id="beginBtnText">Validate API key to continue</span>
+      <span id="beginBtnArrow" style="display:none">&rarr;</span>
+    </button>
   </div>
 </div>
 
-<!-- ══ INTERVIEW SCREEN ══ -->
+<!-- INTERVIEW SCREEN -->
 <div id="interviewScreen">
   <div class="topbar">
     <div class="topbar-brand">Prep<span>AI</span>red</div>
     <div class="topbar-center">
-      <div class="interviewer-badge" id="interviewerBadge">⚔️ Adversarial · Panel</div>
+      <div class="interviewer-badge" id="interviewerBadge">Adversarial &middot; Panel</div>
     </div>
     <div class="topbar-right">
       <div class="progress-info" id="progressInfo">Q1 of 10</div>
-      <button class="export-btn" onclick="exportSession()">↓ Export</button>
-      <button class="exit-btn" onclick="exitInterview()">✕ Exit</button>
+      <button class="export-btn" onclick="exportSession()">&#8595; Export</button>
+      <button class="exit-btn" onclick="exitInterview()">&#10005; Exit</button>
     </div>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
@@ -590,8 +653,8 @@ textarea:disabled { opacity:0.4; }
       <div class="q-end-panel" id="qEndPanel">
         <div class="q-end-msg" id="qEndMsg"></div>
         <div class="q-end-actions">
-          <button class="btn-next" id="btnNext" onclick="advanceQuestion()">Next Question →</button>
-          <button class="btn-doover" id="btnDoover" onclick="doOver()">↺ Do-Over</button>
+          <button class="btn-next" id="btnNext" onclick="advanceQuestion()">Next Question &rarr;</button>
+          <button class="btn-doover" id="btnDoover" onclick="doOver()">&#8634; Do-Over</button>
           <span class="doover-count" id="dooverCount"></span>
         </div>
       </div>
@@ -601,7 +664,7 @@ textarea:disabled { opacity:0.4; }
           <button class="submit-btn" id="submitBtn" onclick="submitAnswer()">SUBMIT</button>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div class="input-hint">⌘+Enter to submit</div>
+          <div class="input-hint">Cmd+Enter to submit</div>
           <div class="char-count" id="charCount">0 / 600</div>
         </div>
       </div>
@@ -609,7 +672,7 @@ textarea:disabled { opacity:0.4; }
   </div>
 </div>
 
-<!-- ══ SUMMARY ══ -->
+<!-- SUMMARY -->
 <div id="summaryScreen">
   <div class="summary-inner">
     <div class="summary-header">
@@ -619,362 +682,643 @@ textarea:disabled { opacity:0.4; }
     </div>
     <div class="overall-score-block">
       <div>
-        <div class="big-score" id="bigScore">—</div>
+        <div class="big-score" id="bigScore">&mdash;</div>
         <div class="big-score-label">Overall / 10</div>
       </div>
       <div id="summaryBreakdown"></div>
     </div>
     <div class="feedback-block">
       <div class="feedback-title">How did the real interview go?</div>
-      <div class="feedback-desc">Close the loop. Your outcome (anonymised) helps calibrate what answers actually correlate with getting hired — not just what sounds good in a simulator.</div>
+      <div class="feedback-desc">Close the loop. Your outcome (anonymised) helps calibrate what answers actually correlate with getting hired.</div>
       <div class="outcome-btns">
-        <button class="outcome-btn" onclick="recordOutcome(this,'got_it')">🎉 Got the job</button>
-        <button class="outcome-btn" onclick="recordOutcome(this,'progressed')">→ Progressed</button>
-        <button class="outcome-btn" onclick="recordOutcome(this,'rejected')">✗ Rejected</button>
-        <button class="outcome-btn" onclick="recordOutcome(this,'pending')">⏳ Still waiting</button>
-        <button class="outcome-btn" onclick="recordOutcome(this,'withdrew')">↩ I withdrew</button>
+        <button class="outcome-btn" onclick="recordOutcome(this,'got_it')">Got the job</button>
+        <button class="outcome-btn" onclick="recordOutcome(this,'progressed')">Progressed</button>
+        <button class="outcome-btn" onclick="recordOutcome(this,'rejected')">Rejected</button>
+        <button class="outcome-btn" onclick="recordOutcome(this,'pending')">Still waiting</button>
+        <button class="outcome-btn" onclick="recordOutcome(this,'withdrew')">I withdrew</button>
       </div>
     </div>
     <div class="summary-q-list" id="summaryQList"></div>
     <div class="summary-actions">
-      <button class="btn-restart" onclick="restartApp()">New Session →</button>
-      <button class="btn-export-sum" onclick="exportSession()">↓ Export Session JSON</button>
+      <button class="btn-restart" onclick="restartApp()">New Session &rarr;</button>
+      <button class="btn-export-sum" onclick="exportSession()">&#8595; Export Session JSON</button>
     </div>
   </div>
 </div>
 
 <script>
-const QUESTIONS=[
-  {id:1,tag:'behavioural',text:"Tell me about yourself and why you're interested in this role.",context:"Opening — cultural fit and whether your background makes sense for consulting.",tips:"Lead with your current role → the Copilot Studio win → why consulting is the natural next step. Tell a story, not a CV recitation."},
-  {id:2,tag:'governance',text:"Walk me through a time you identified an AI risk that wasn't obvious to the business.",context:"Risk instinct. They want to see how you think, not just that you know risks exist.",tips:"Copilot Studio rollout. Surface non-obvious risks — prompt injection via connectors, shadow adoption, data boundary violations — and what you did."},
-  {id:3,tag:'scenario',text:"A financial services client is deploying Microsoft Copilot across 2,000 employees. Walk me through your AI risk assessment approach.",context:"Classic scenario. Methodology matters more than the risk list.",tips:"Scope → data flows → threat actors → control framework (NIST AI RMF) → prioritise by likelihood/impact → recommendations."},
-  {id:4,tag:'technical',text:"What AI/ML security frameworks are you familiar with, and how would you apply one in a real engagement?",context:"Depth check. Pick one and show you can actually use it.",tips:"Don't list them. Pick NIST AI RMF, walk through Govern → Map → Measure → Manage with a real example. Show you've used it."},
-  {id:5,tag:'behavioural',text:"Describe a situation where you communicated a complex technical risk to a non-technical executive.",context:"Core consulting skill — translating complexity into decisions.",tips:"Your Innovation Challenge pitch. How did you frame ROI and risk tradeoffs to get exec buy-in? What did you leave out and why?"},
-  {id:6,tag:'governance',text:"How would you build a repeatable AI governance framework for a client adopting GenAI at scale?",context:"They want scalable consulting artefacts, not one-off solutions.",tips:"Policy → controls → operations → assurance. Reference your RACI and phased rollout thinking from the Copilot project."},
-  {id:7,tag:'scenario',text:"Mid-engagement, you discover the client has deployed an unapproved AI tool across three departments. It's out of scope. What do you do?",context:"Ambiguity and scope management under pressure.",tips:"Escalate → document → bring into scope or formally note OOS → protect the client. Never ignore it."},
-  {id:8,tag:'technical',text:"What are the key security risks specific to LLM integrations, and how do you control for them?",context:"Technical depth. They'll probe specifics.",tips:"Prompt injection, data exfiltration via outputs, training data poisoning, insecure plugins, hallucination risks. Know OWASP LLM Top 10."},
+var QUESTIONS=[
+  {id:1,tag:'behavioural',text:"Tell me about yourself and why you're interested in this role.",context:"Opening — cultural fit and whether your background makes sense for consulting.",tips:"Lead with your current role, the Copilot Studio win, then why consulting is the natural next step. Story, not CV recitation."},
+  {id:2,tag:'governance',text:"Walk me through a time you identified an AI risk that wasn't obvious to the business.",context:"Risk instinct. They want to see how you think, not just that you know risks exist.",tips:"Copilot Studio rollout. Surface non-obvious risks: prompt injection via connectors, shadow adoption, data boundary violations."},
+  {id:3,tag:'scenario',text:"A financial services client is deploying Microsoft Copilot across 2,000 employees. Walk me through your AI risk assessment approach.",context:"Classic scenario. Methodology matters more than the risk list.",tips:"Scope, data flows, threat actors, control framework (NIST AI RMF), prioritise by likelihood/impact, recommendations."},
+  {id:4,tag:'technical',text:"What AI/ML security frameworks are you familiar with, and how would you apply one in a real engagement?",context:"Depth check. Pick one and show you can actually use it.",tips:"Don't list them. Pick NIST AI RMF, walk through Govern, Map, Measure, Manage with a real example."},
+  {id:5,tag:'behavioural',text:"Describe a situation where you communicated a complex technical risk to a non-technical executive.",context:"Core consulting skill — translating complexity into decisions.",tips:"Your Innovation Challenge pitch. How did you frame ROI and risk tradeoffs to get exec buy-in?"},
+  {id:6,tag:'governance',text:"How would you build a repeatable AI governance framework for a client adopting GenAI at scale?",context:"They want scalable consulting artefacts, not one-off solutions.",tips:"Policy, controls, operations, assurance. Reference your RACI and phased rollout thinking."},
+  {id:7,tag:'scenario',text:"Mid-engagement, you discover the client has deployed an unapproved AI tool across three departments. It's out of scope. What do you do?",context:"Ambiguity and scope management under pressure.",tips:"Escalate, document, bring into scope or formally note OOS, protect the client. Never ignore it."},
+  {id:8,tag:'technical',text:"What are the key security risks specific to LLM integrations, and how do you control for them?",context:"Technical depth. They'll probe specifics.",tips:"Prompt injection, data exfiltration via outputs, training data poisoning, insecure plugins, hallucination risks. OWASP LLM Top 10."},
   {id:9,tag:'behavioural',text:"What draws you to consulting over a product or internal role?",context:"They know your background. Be honest — they'll respect it.",tips:"Variety, client exposure, building repeatable frameworks. Acknowledge the shift. Don't oversell it."},
-  {id:10,tag:'scenario',text:"Two weeks to deliver an AI security assessment. Day 5 — scope is far larger than estimated. What happens?",context:"Delivery under pressure and client management.",tips:"Surface it early, document specifically, propose options (descope/extend/phase). Never push through half-done."}
+  {id:10,tag:'scenario',text:"Two weeks to deliver an AI security assessment. Day 5 — scope is far larger than estimated. What happens?",context:"Delivery under pressure and client management.",tips:"Surface it early, document specifically, propose options (descope, extend, phase). Never push through half-done."}
 ];
 
-const PERSONALITIES={
-  warm:{icon:'☀️',label:'Warm',promptDesc:'You are warm, encouraging, and supportive. You acknowledge good points generously and frame feedback constructively. You still probe gaps but gently.'},
-  technical:{icon:'🔬',label:'Technical',promptDesc:'You are rigorous and technically precise. You drill into specifics, challenge vague answers, and demand detail about frameworks and implementation. You respect genuine technical depth.'},
-  adversarial:{icon:'⚔️',label:'Adversarial',promptDesc:'You are tough and skeptical. You push back on almost everything, challenge assumptions, and stress-test positions. Not rude but relentless.'},
-  hr:{icon:'📋',label:'HR / STAR',promptDesc:'You are HR-focused. You want STAR-format answers (Situation, Task, Action, Result) and specific examples. You redirect vague answers back to real situations.'},
-  curious:{icon:'🔭',label:'Curious',promptDesc:'You are intellectually curious. You ask why and how and what-if. You are genuinely interested in how the candidate thinks. You go off-script when something interesting comes up.'}
+var PERSONALITIES={
+  warm:{icon:'',label:'Warm',promptDesc:'You are warm, encouraging, and supportive. You acknowledge good points generously and frame feedback constructively. You still probe gaps but gently.'},
+  technical:{icon:'',label:'Technical',promptDesc:'You are rigorous and technically precise. You drill into specifics, challenge vague answers, and demand detail about frameworks and implementation.'},
+  adversarial:{icon:'',label:'Adversarial',promptDesc:'You are tough and skeptical. You push back on almost everything, challenge assumptions, and stress-test positions. Not rude but relentless.'},
+  hr:{icon:'',label:'HR / STAR',promptDesc:'You are HR-focused. You want STAR-format answers (Situation, Task, Action, Result) and specific examples. You redirect vague answers back to real situations.'},
+  curious:{icon:'',label:'Curious',promptDesc:'You are intellectually curious. You ask why and how and what-if. You go off-script when something interesting comes up.'}
 };
 
-const TIME_LIMITS={
+var TIME_LIMITS={
   relaxed:{behavioural:180,governance:180,technical:180,scenario:240},
   realistic:{behavioural:120,governance:150,technical:120,scenario:180},
   brutal:{behavioural:75,governance:90,technical:90,scenario:120}
 };
 
-const PROVIDERS={
+var PROVIDERS={
   anthropic:{
     url:'https://api.anthropic.com/v1/messages',
-    headers:(k)=>({'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}),
-    body:(sys,msgs)=>({model:'claude-haiku-4-5-20251001',max_tokens:900,system:sys,messages:msgs}),
-    extract:(d)=>d.content?.[0]?.text
+    headers:function(k){return{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};},
+    body:function(sys,msgs){return{model:'claude-haiku-4-5-20251001',max_tokens:900,system:sys,messages:msgs};},
+    extract:function(d){return d.content&&d.content[0]&&d.content[0].text;}
   },
   openai:{
     url:'https://api.openai.com/v1/chat/completions',
-    headers:(k)=>({'Content-Type':'application/json','Authorization':`Bearer ${k}`}),
-    body:(sys,msgs)=>({model:'gpt-4o-mini',max_tokens:900,messages:[{role:'system',content:sys},...msgs]}),
-    extract:(d)=>d.choices?.[0]?.message?.content
+    headers:function(k){return{'Content-Type':'application/json','Authorization':'Bearer '+k};},
+    body:function(sys,msgs){var m=[{role:'system',content:sys}];for(var i=0;i<msgs.length;i++)m.push(msgs[i]);return{model:'gpt-4o-mini',max_tokens:900,messages:m};},
+    extract:function(d){return d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;}
   },
   groq:{
     url:'https://api.groq.com/openai/v1/chat/completions',
-    headers:(k)=>({'Content-Type':'application/json','Authorization':`Bearer ${k}`}),
-    body:(sys,msgs)=>({model:'llama-3.1-8b-instant',max_tokens:900,messages:[{role:'system',content:sys},...msgs]}),
-    extract:(d)=>d.choices?.[0]?.message?.content
+    headers:function(k){return{'Content-Type':'application/json','Authorization':'Bearer '+k};},
+    body:function(sys,msgs){var m=[{role:'system',content:sys}];for(var i=0;i<msgs.length;i++)m.push(msgs[i]);return{model:'llama-3.1-8b-instant',max_tokens:900,messages:m};},
+    extract:function(d){return d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;}
   }
 };
 
-const CHAR_LIMIT=600,MAX_DOOVER=3;
-let cfg={apiKey:'',provider:'anthropic',personality:'adversarial',format:'panel',difficulty:'realistic',profile:''};
-let state={currentIdx:0,scores:{},histories:{},attempts:{},questionDone:{},timerInterval:null,secondsLeft:0,totalSeconds:0,isLoading:false,lastSubmitTime:0,sessionStart:null};
+var CHAR_LIMIT=600,MAX_DOOVER=3;
+var cfg={apiKey:'',provider:'anthropic',personality:'adversarial',format:'panel',difficulty:'realistic',profile:''};
+var state={currentIdx:0,scores:{},histories:{},attempts:{},questionDone:{},timerInterval:null,secondsLeft:0,totalSeconds:0,isLoading:false,lastSubmitTime:0,sessionStart:null,keyValidated:false};
+var keyCheckTimer=null;
 
-function sanitiseInput(s){return typeof s!=='string'?'':s.replace(/<[^>]*>/g,'').replace(/[<>]/g,'').trim().substring(0,CHAR_LIMIT);}
-window.addEventListener('beforeunload',()=>{cfg.apiKey='';});
-window.addEventListener('scroll',()=>{document.getElementById('mainNav')?.classList.toggle('scrolled',window.scrollY>20);});
+function sanitiseInput(s){
+  if(typeof s!=='string')return'';
+  return s.replace(/<[^>]*>/g,'').replace(/[<>]/g,'').trim().substring(0,CHAR_LIMIT);
+}
+window.addEventListener('beforeunload',function(){cfg.apiKey='';});
+window.addEventListener('scroll',function(){
+  var nav=document.getElementById('mainNav');
+  if(nav)nav.classList.toggle('scrolled',window.scrollY>20);
+});
 
 function openSetup(){document.getElementById('setupModal').classList.add('open');document.body.style.overflow='hidden';}
 function closeSetup(){document.getElementById('setupModal').classList.remove('open');document.body.style.overflow='';}
 
 function selectProvider(el){
-  document.querySelectorAll('.provider-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active'); cfg.provider=el.dataset.provider;
-  document.querySelectorAll('.provider-info').forEach(i=>i.classList.remove('visible'));
-  document.getElementById(`info-${cfg.provider}`)?.classList.add('visible');
-  const ph={anthropic:'sk-ant-...',openai:'sk-...',groq:'gsk_...'};
+  document.querySelectorAll('.provider-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  cfg.provider=el.dataset.provider;
+  document.querySelectorAll('.provider-info').forEach(function(i){i.classList.remove('visible');});
+  var info=document.getElementById('info-'+cfg.provider);
+  if(info)info.classList.add('visible');
+  var ph={anthropic:'sk-ant-...',openai:'sk-...',groq:'gsk_...'};
   document.getElementById('apiKeyInput').placeholder=ph[cfg.provider]||'API key...';
+  // Re-validate if key already present
+  var key=document.getElementById('apiKeyInput').value.trim();
+  if(key.length>10)scheduleKeyCheck();
+  // Update systems-go provider label
+  var provLabels={anthropic:'Anthropic Claude Haiku',openai:'OpenAI GPT-4o-mini',groq:'Groq Llama 3 (free tier)'};
+  document.getElementById('sgProvider').textContent=provLabels[cfg.provider]+' connected';
 }
-function toggleKeyVis(){const i=document.getElementById('apiKeyInput');i.type=i.type==='password'?'text':'password';}
+
+function toggleKeyVis(){
+  var i=document.getElementById('apiKeyInput');
+  i.type=i.type==='password'?'text':'password';
+}
+
+function onKeyInput(){
+  // Reset validation state
+  state.keyValidated=false;
+  updateBeginBtn();
+  var key=document.getElementById('apiKeyInput').value.trim();
+  if(!key){
+    setKeyStatus('idle','Paste your API key to validate');
+    document.getElementById('systemsGo').classList.remove('visible');
+    return;
+  }
+  setKeyStatus('checking','Checking key...');
+  clearTimeout(keyCheckTimer);
+  keyCheckTimer=setTimeout(validateKey,800);
+}
+
+function scheduleKeyCheck(){
+  clearTimeout(keyCheckTimer);
+  keyCheckTimer=setTimeout(validateKey,200);
+}
+
+function setKeyStatus(cls,text){
+  var el=document.getElementById('keyStatus');
+  el.className='key-status '+cls;
+  document.getElementById('keyStatusText').textContent=text;
+  var input=document.getElementById('apiKeyInput');
+  input.classList.remove('valid','invalid');
+  if(cls==='valid')input.classList.add('valid');
+  if(cls==='invalid')input.classList.add('invalid');
+}
+
+async function validateKey(){
+  var key=document.getElementById('apiKeyInput').value.trim();
+  if(!key){setKeyStatus('idle','Paste your API key to validate');return;}
+  setKeyStatus('checking','Validating with '+cfg.provider+'...');
+  var prov=PROVIDERS[cfg.provider];
+  // Send a minimal test message
+  var testSys='Reply with exactly the word: OK';
+  var testMsgs=[{role:'user',content:'ping'}];
+  try{
+    var resp=await fetch(prov.url,{
+      method:'POST',
+      headers:prov.headers(key),
+      body:JSON.stringify(prov.body(testSys,testMsgs))
+    });
+    var data=await resp.json();
+    if(!resp.ok||data.error){
+      var errMsg=data.error?data.error.message||data.error.error||'Invalid key':'HTTP '+resp.status;
+      setKeyStatus('invalid','Invalid key: '+errMsg.substring(0,60));
+      state.keyValidated=false;
+      document.getElementById('systemsGo').classList.remove('visible');
+    } else {
+      setKeyStatus('valid','Key valid — ready to go');
+      state.keyValidated=true;
+      cfg.apiKey=key;
+      var provLabels={anthropic:'Anthropic Claude Haiku',openai:'OpenAI GPT-4o-mini',groq:'Groq Llama 3 (free tier)'};
+      document.getElementById('sgProvider').textContent=provLabels[cfg.provider]+' connected';
+      document.getElementById('systemsGo').classList.add('visible');
+    }
+  }catch(e){
+    setKeyStatus('invalid','Connection error: '+e.message.substring(0,60));
+    state.keyValidated=false;
+    document.getElementById('systemsGo').classList.remove('visible');
+  }
+  updateBeginBtn();
+}
+
+function updateBeginBtn(){
+  var btn=document.getElementById('beginBtn');
+  var btnText=document.getElementById('beginBtnText');
+  var btnArrow=document.getElementById('beginBtnArrow');
+  if(state.keyValidated){
+    btn.classList.add('ready');
+    btnText.textContent='Begin Interview';
+    btnArrow.style.display='inline';
+  } else {
+    btn.classList.remove('ready');
+    btnText.textContent='Validate API key to continue';
+    btnArrow.style.display='none';
+  }
+}
+
 function selectProfileTab(el){
-  document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
-  document.querySelectorAll('.profile-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById(`panel-${el.dataset.panel}`)?.classList.add('active');
+  document.querySelectorAll('.profile-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.querySelectorAll('.profile-panel').forEach(function(p){p.classList.remove('active');});
+  var panel=document.getElementById('panel-'+el.dataset.panel);
+  if(panel)panel.classList.add('active');
 }
-function selectPersonality(el){document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');cfg.personality=el.dataset.p;}
-function selectFormat(el){document.querySelectorAll('[data-f]').forEach(c=>c.classList.remove('fmt-active'));el.classList.add('fmt-active');cfg.format=el.dataset.f;}
-function selectDiff(el){document.querySelectorAll('[data-d]').forEach(c=>c.classList.remove('diff-active'));el.classList.add('diff-active');cfg.difficulty=el.dataset.d;}
+
+function selectPersonality(el){
+  document.querySelectorAll('.p-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+  cfg.personality=el.dataset.p;
+}
+
+function selectFormat(el){
+  document.querySelectorAll('[data-f]').forEach(function(c){c.classList.remove('fmt-active');});
+  el.classList.add('fmt-active');
+  cfg.format=el.dataset.f;
+}
+
+function selectDiff(el){
+  document.querySelectorAll('[data-d]').forEach(function(c){c.classList.remove('diff-active');});
+  el.classList.add('diff-active');
+  cfg.difficulty=el.dataset.d;
+}
 
 function beginInterview(){
-  const key=document.getElementById('apiKeyInput').value.trim();
-  if(!key){alert('Please enter an API key.');return;}
-  cfg.apiKey=key;
-  const activePanel=document.querySelector('.profile-tab.active')?.dataset.panel;
-  if(activePanel==='paste') cfg.profile=document.getElementById('profileText')?.value?.trim()||'';
-  else if(activePanel==='url') cfg.profile=document.getElementById('profileUrl')?.value?.trim()||'';
-  else cfg.profile='';
-  state.currentIdx=0;state.scores={};state.histories={};state.attempts={};state.questionDone={};state.sessionStart=new Date().toISOString();
+  if(!state.keyValidated){
+    setKeyStatus('checking','Validating...');
+    validateKey().then(function(){
+      if(state.keyValidated)beginInterview();
+    });
+    return;
+  }
+  var activePanel=document.querySelector('.profile-tab.active');
+  var panel=activePanel?activePanel.dataset.panel:'skip';
+  if(panel==='paste'){
+    var pt=document.getElementById('profileText');
+    cfg.profile=pt?pt.value.trim():'';
+  } else if(panel==='url'){
+    var pu=document.getElementById('profileUrl');
+    cfg.profile=pu?pu.value.trim():'';
+  } else {
+    cfg.profile='';
+  }
+  state.currentIdx=0;
+  state.scores={};state.histories={};state.attempts={};state.questionDone={};
+  state.sessionStart=new Date().toISOString();
   closeSetup();
   document.getElementById('landingPage').style.display='none';
   document.getElementById('interviewScreen').style.display='flex';
-  const p=PERSONALITIES[cfg.personality];
-  document.getElementById('interviewerBadge').textContent=`${p.icon} ${p.label} · ${cfg.format==='panel'?'Panel':'1:1'}`;
+  var p=PERSONALITIES[cfg.personality];
+  var fmt=cfg.format==='panel'?'Panel':'1:1';
+  document.getElementById('interviewerBadge').textContent=p.label+' \u00b7 '+fmt;
   loadQuestion(0);
 }
 
 function loadQuestion(idx){
-  const q=QUESTIONS[idx];if(!q){showSummary();return;}
+  var q=QUESTIONS[idx];
+  if(!q){showSummary();return;}
   if(!state.histories[q.id])state.histories[q.id]=[];
   if(!state.attempts[q.id])state.attempts[q.id]=0;
   state.currentIdx=idx;state.questionDone[q.id]=false;
-  document.getElementById('qNumBadge').textContent=`Q${q.id}`;
-  const tt=document.getElementById('qTypeTag');const tc=tagColor(q.tag);
+  document.getElementById('qNumBadge').textContent='Q'+q.id;
+  var tt=document.getElementById('qTypeTag');var tc=tagColor(q.tag);
   tt.textContent=q.tag;tt.style.background=tc.bg;tt.style.color=tc.fg;
   document.getElementById('qText').textContent=q.text;
   document.getElementById('qContext').textContent=q.context;
   document.getElementById('progressFill').style.width=(idx/QUESTIONS.length*100)+'%';
-  document.getElementById('progressInfo').textContent=`Q${idx+1} of ${QUESTIONS.length}`;
+  document.getElementById('progressInfo').textContent='Q'+(idx+1)+' of '+QUESTIONS.length;
   renderAttempts(q);renderSidebar();renderChat(q);
   document.getElementById('qEndPanel').classList.remove('visible');
   document.getElementById('inputZone').style.display='block';
   document.getElementById('answerInput').value='';
-  document.getElementById('charCount').textContent=`0 / ${CHAR_LIMIT}`;
+  document.getElementById('charCount').textContent='0 / '+CHAR_LIMIT;
   document.getElementById('charCount').className='char-count';
   document.getElementById('submitBtn').disabled=false;
   document.getElementById('answerInput').disabled=false;
   startTimer(TIME_LIMITS[cfg.difficulty][q.tag]||120);
-  setTimeout(()=>document.getElementById('answerInput').focus(),100);
+  setTimeout(function(){document.getElementById('answerInput').focus();},100);
 }
 
 function tagColor(tag){
-  return{governance:{bg:'rgba(0,229,204,0.1)',fg:'#00e5cc'},technical:{bg:'rgba(34,197,94,0.1)',fg:'#22c55e'},behavioural:{bg:'rgba(249,115,22,0.1)',fg:'#f97316'},scenario:{bg:'rgba(239,68,68,0.1)',fg:'#ef4444'}}[tag]||{bg:'rgba(167,139,250,0.1)',fg:'#a78bfa'};
+  var map={
+    governance:{bg:'rgba(0,229,204,0.1)',fg:'#00e5cc'},
+    technical:{bg:'rgba(34,197,94,0.1)',fg:'#22c55e'},
+    behavioural:{bg:'rgba(249,115,22,0.1)',fg:'#f97316'},
+    scenario:{bg:'rgba(239,68,68,0.1)',fg:'#ef4444'}
+  };
+  return map[tag]||{bg:'rgba(167,139,250,0.1)',fg:'#a78bfa'};
 }
 
 function renderAttempts(q){
-  const att=state.attempts[q.id]||0;
-  let html=att>0?`<span style="color:var(--orange);font-size:10px;">Attempt ${att+1}</span>`:'';
-  for(let i=0;i<MAX_DOOVER+1;i++)html+=`<div class="attempt-dot ${i<att?'used':i===att?'current':''}"></div>`;
+  var att=state.attempts[q.id]||0;
+  var html=att>0?'<span style="color:var(--orange);font-size:10px;">Attempt '+(att+1)+'</span>':'';
+  for(var i=0;i<MAX_DOOVER+1;i++){
+    var cls=i<att?'used':i===att?'current':'';
+    html+='<div class="attempt-dot '+cls+'"></div>';
+  }
   document.getElementById('attemptIndicator').innerHTML=html;
 }
 
 function renderSidebar(){
-  document.getElementById('qSidebar').innerHTML=`<div class="sidebar-label">Questions</div>`+QUESTIONS.map((q,i)=>{
-    const cls=i===state.currentIdx?'current':state.questionDone[q.id]?'done':'upcoming';
-    const sc=state.scores[q.id];const col=tagColor(q.tag);
-    return`<div class="q-pill ${cls}"><div class="q-tag-dot" style="background:${col.fg}"></div><div class="q-pill-num">Q${q.id}</div><div class="q-pill-text">${q.text}</div>${sc?`<div class="q-pill-score">${sc.overall}</div>`:''}</div>`;
-  }).join('');
+  var html='<div class="sidebar-label">Questions</div>';
+  for(var i=0;i<QUESTIONS.length;i++){
+    var q=QUESTIONS[i];
+    var cls=i===state.currentIdx?'current':state.questionDone[q.id]?'done':'upcoming';
+    var sc=state.scores[q.id];var col=tagColor(q.tag);
+    html+='<div class="q-pill '+cls+'">';
+    html+='<div class="q-tag-dot" style="background:'+col.fg+'"></div>';
+    html+='<div class="q-pill-num">Q'+q.id+'</div>';
+    html+='<div class="q-pill-text">'+q.text+'</div>';
+    if(sc)html+='<div class="q-pill-score">'+sc.overall+'</div>';
+    html+='</div>';
+  }
+  document.getElementById('qSidebar').innerHTML=html;
 }
 
 function renderChat(q){
-  const chat=document.getElementById('chatArea');
-  const history=state.histories[q.id]||[];
+  var chat=document.getElementById('chatArea');
+  var history=state.histories[q.id]||[];
   if(!history.length){
-    const att=state.attempts[q.id]||0;
-    chat.innerHTML=`<div class="coach-tip"><div class="coach-tip-label">💡 Coaching Tip</div>${q.tips}${att>0?`<div style="margin-top:8px;color:var(--orange);font-family:var(--mono);font-size:10px;">↺ Do-over ${att}/${MAX_DOOVER} — score adjusted</div>`:''}</div>`;
+    var att=state.attempts[q.id]||0;
+    var tip='<div class="coach-tip"><div class="coach-tip-label">Coaching Tip</div>'+q.tips;
+    if(att>0)tip+='<div style="margin-top:8px;color:var(--orange);font-family:var(--mono);font-size:10px;">Do-over '+att+'/'+MAX_DOOVER+' — score adjusted</div>';
+    tip+='</div>';
+    chat.innerHTML=tip;
     return;
   }
-  chat.innerHTML=history.map(m=>m.role==='you'
-    ?`<div class="msg you"><div class="msg-who">You</div><div class="msg-bubble">${escHtml(m.content)}</div></div>`
-    :`<div class="msg coach"><div class="msg-who">${PERSONALITIES[cfg.personality].icon} Interviewer</div><div class="msg-bubble">${m.content}</div></div>`
-  ).join('');
+  var html='';
+  for(var i=0;i<history.length;i++){
+    var m=history[i];
+    if(m.role==='you'){
+      html+='<div class="msg you"><div class="msg-who">You</div><div class="msg-bubble">'+escHtml(m.content)+'</div></div>';
+    } else {
+      html+='<div class="msg coach"><div class="msg-who">Interviewer</div><div class="msg-bubble">'+m.content+'</div></div>';
+    }
+  }
+  chat.innerHTML=html;
   chat.scrollTop=chat.scrollHeight;
 }
 
 function startTimer(sec){
-  clearInterval(state.timerInterval);state.secondsLeft=sec;state.totalSeconds=sec;updateTimerUI();
-  state.timerInterval=setInterval(()=>{state.secondsLeft--;updateTimerUI();if(state.secondsLeft<=0){clearInterval(state.timerInterval);timeUp();}},1000);
+  clearInterval(state.timerInterval);
+  state.secondsLeft=sec;state.totalSeconds=sec;updateTimerUI();
+  state.timerInterval=setInterval(function(){
+    state.secondsLeft--;updateTimerUI();
+    if(state.secondsLeft<=0){clearInterval(state.timerInterval);timeUp();}
+  },1000);
 }
 
 function updateTimerUI(){
-  const s=state.secondsLeft;const d=document.getElementById('timerDisplay');const f=document.getElementById('timerFill');
-  d.textContent=`${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
-  const pct=s/state.totalSeconds*100;f.style.width=pct+'%';
+  var s=state.secondsLeft;
+  var d=document.getElementById('timerDisplay');
+  var f=document.getElementById('timerFill');
+  d.textContent=Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60);
+  var pct=s/state.totalSeconds*100;
+  f.style.width=pct+'%';
   if(s<=15){d.className='timer-display critical';f.style.background='var(--red)';}
   else if(s<=30){d.className='timer-display warning';f.style.background='var(--orange)';}
   else{d.className='timer-display';f.style.background=pct>50?'var(--cyan)':'var(--green)';}
 }
 
 function timeUp(){
-  const ans=document.getElementById('answerInput').value.trim();
+  var ans=document.getElementById('answerInput').value.trim();
   if(ans&&!state.isLoading)submitAnswer(true);
-  else if(!ans)showEndPanel("⏱ Time's up. No answer submitted. Do it over or move on.",QUESTIONS[state.currentIdx]);
+  else if(!ans)showEndPanel("Time's up. No answer submitted. Do it over or move on.",QUESTIONS[state.currentIdx]);
 }
 
 function handleKey(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')submitAnswer();}
+
 function updateCharCount(){
-  const len=document.getElementById('answerInput').value.length;
-  const el=document.getElementById('charCount');el.textContent=`${len} / ${CHAR_LIMIT}`;
-  el.className='char-count'+(len>CHAR_LIMIT?' over':len>CHAR_LIMIT*0.8?' warn':'');
+  var len=document.getElementById('answerInput').value.length;
+  var el=document.getElementById('charCount');
+  el.textContent=len+' / '+CHAR_LIMIT;
+  if(len>CHAR_LIMIT)el.className='char-count over';
+  else if(len>CHAR_LIMIT*0.8)el.className='char-count warn';
+  else el.className='char-count';
 }
 
-async function submitAnswer(timerForced=false){
+async function submitAnswer(timerForced){
+  timerForced=timerForced||false;
   if(state.isLoading)return;
-  const now=Date.now();if(now-state.lastSubmitTime<2000&&!timerForced)return;
+  var now=Date.now();
+  if(now-state.lastSubmitTime<2000&&!timerForced)return;
   state.lastSubmitTime=now;
-  const q=QUESTIONS[state.currentIdx];
-  const inp=document.getElementById('answerInput');
-  const answer=sanitiseInput(inp.value);if(!answer)return;
-  clearInterval(state.timerInterval);state.isLoading=true;
-  document.getElementById('submitBtn').disabled=true;inp.disabled=true;
-  const history=state.histories[q.id];
-  history.push({role:'you',content:answer});inp.value='';renderChat(q);
-  const chat=document.getElementById('chatArea');
-  const loadDiv=document.createElement('div');loadDiv.className='msg coach';loadDiv.id='loadingMsg';
-  loadDiv.innerHTML=`<div class="msg-who">${PERSONALITIES[cfg.personality].icon} Interviewer</div><div class="thinking"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="margin-left:6px;">thinking...</span></div>`;
-  chat.appendChild(loadDiv);chat.scrollTop=chat.scrollHeight;
-  const att=state.attempts[q.id]||0;
-  const penaltyNote=att>0?`Note: Attempt ${att+1} of ${MAX_DOOVER+1}. Deduct 0.5 from overall per additional attempt.`:'';
-  const profileNote=cfg.profile?`\n\nCandidate profile:\n${cfg.profile.substring(0,800)}`:'';
-  const p=PERSONALITIES[cfg.personality];
-  const fmt=cfg.format==='panel'?'a panel of 2-3 interviewers (you are lead)':'a 1:1 (you are sole interviewer)';
-  const sys=`You are an interviewer for CyberCX Australia conducting ${fmt} for Senior Consultant - Secure AI (Governance). ${p.promptDesc}${profileNote}${!cfg.profile?`\n\nCandidate: Product Owner at a cybersecurity company, Melbourne. Led Microsoft Copilot Studio deployment org-wide. Background: instructional design → product management → AI governance. Gap: limited formal consulting experience.`:''}
-Current question: "${q.text}"
-${penaltyNote}${timerForced?'\nNote: candidate ran out of time, answer was auto-submitted.':''}
-
-Respond in character. Acknowledge what landed, push back on anything vague or weak. ONE follow-up max if warranted.
-
-Then:
----SCORE---
-structure:X
-confidence:X
-technical_depth:X
-consulting_readiness:X
-overall:X
-verdict:One punchy sentence
----END---
-
-Scores 1-10. Honest. 7=solid. 9=exceptional.`;
-
-  const msgs=buildMessages(q,answer);
-  const prov=PROVIDERS[cfg.provider];
+  var q=QUESTIONS[state.currentIdx];
+  var inp=document.getElementById('answerInput');
+  var answer=sanitiseInput(inp.value);
+  if(!answer)return;
+  clearInterval(state.timerInterval);
+  state.isLoading=true;
+  document.getElementById('submitBtn').disabled=true;
+  inp.disabled=true;
+  var history=state.histories[q.id];
+  history.push({role:'you',content:answer});
+  inp.value='';
+  renderChat(q);
+  var chat=document.getElementById('chatArea');
+  var loadDiv=document.createElement('div');
+  loadDiv.className='msg coach';loadDiv.id='loadingMsg';
+  loadDiv.innerHTML='<div class="msg-who">Interviewer</div><div class="thinking"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="margin-left:6px;">thinking...</span></div>';
+  chat.appendChild(loadDiv);
+  chat.scrollTop=chat.scrollHeight;
+  var att=state.attempts[q.id]||0;
+  var penaltyNote=att>0?'Note: Attempt '+(att+1)+' of '+(MAX_DOOVER+1)+'. Deduct 0.5 from overall per additional attempt.':'';
+  var profileNote=cfg.profile?'\n\nCandidate profile:\n'+cfg.profile.substring(0,800):'';
+  var p=PERSONALITIES[cfg.personality];
+  var fmt=cfg.format==='panel'?'a panel of 2-3 interviewers (you are lead)':'a 1:1 (you are sole interviewer)';
+  var defaultContext='\n\nCandidate: Product Owner at a cybersecurity company, Melbourne. Led Microsoft Copilot Studio deployment org-wide. Background: instructional design to product management to AI governance. Gap: limited formal consulting experience.';
+  var sys='You are an interviewer for CyberCX Australia conducting '+fmt+' for Senior Consultant - Secure AI (Governance). '+p.promptDesc+(cfg.profile?profileNote:defaultContext)+'\nCurrent question: "'+q.text+'"\n'+penaltyNote+(timerForced?'\nNote: candidate ran out of time, answer was auto-submitted.':'')+'\n\nRespond in character. Acknowledge what landed, push back on anything vague or weak. ONE follow-up max if warranted.\n\nThen:\n---SCORE---\nstructure:X\nconfidence:X\ntechnical_depth:X\nconsulting_readiness:X\noverall:X\nverdict:One punchy sentence\n---END---\n\nScores 1-10. Honest. 7=solid. 9=exceptional.';
+  var msgs=buildMessages(q,answer);
+  var prov=PROVIDERS[cfg.provider];
   try{
-    const resp=await fetch(prov.url,{method:'POST',headers:prov.headers(cfg.apiKey),body:JSON.stringify(prov.body(sys,msgs))});
-    const data=await resp.json();
-    if(!resp.ok||data.error)throw new Error(data.error?.message||data.error?.error||`HTTP ${resp.status}`);
-    const raw=prov.extract(data)||'';
-    const sm=raw.match(/---SCORE---([\s\S]*?)---END---/);
-    let clean=raw.replace(/---SCORE---([\s\S]*?)---END---/,'').trim();
-    let sd={};let scoreHTML='';
+    var resp=await fetch(prov.url,{method:'POST',headers:prov.headers(cfg.apiKey),body:JSON.stringify(prov.body(sys,msgs))});
+    var data=await resp.json();
+    if(!resp.ok||data.error)throw new Error((data.error&&(data.error.message||data.error.error))||'HTTP '+resp.status);
+    var raw=prov.extract(data)||'';
+    var sm=raw.match(/---SCORE---([\s\S]*?)---END---/);
+    var clean=raw.replace(/---SCORE---([\s\S]*?)---END---/,'').trim();
+    var sd={};var scoreHTML='';
     if(sm){
-      sm[1].trim().split('\n').forEach(line=>{
-        const ci=line.indexOf(':');if(ci===-1)return;
-        const k=line.substring(0,ci).trim().toLowerCase().replace(/\s+/g,'_');
-        const v=line.substring(ci+1).trim();
+      sm[1].trim().split('\n').forEach(function(line){
+        var ci=line.indexOf(':');if(ci===-1)return;
+        var k=line.substring(0,ci).trim().toLowerCase().replace(/\s+/g,'_');
+        var v=line.substring(ci+1).trim();
         if(k&&v)sd[k]=isNaN(v)?v:Math.min(10,Math.max(1,parseFloat(v)));
       });
-      if(sd.overall!==undefined)state.scores[q.id]={...sd,attempts:att+1};
-      const metrics=[{key:'structure',label:'Structure',color:'#00e5cc'},{key:'confidence',label:'Confidence',color:'#22c55e'},{key:'technical_depth',label:'Technical Depth',color:'#f97316'},{key:'consulting_readiness',label:'Consulting Readiness',color:'#a78bfa'},{key:'overall',label:'OVERALL',color:'#00e5cc'}];
-      scoreHTML=`<div class="score-card">${metrics.filter(m=>sd[m.key]!==undefined&&!isNaN(sd[m.key])).map(m=>`<div class="score-row"><span class="score-lbl">${m.label}</span><div class="score-bar-bg"><div class="score-bar-fill" style="width:${sd[m.key]*10}%;background:${m.color}"></div></div><span class="score-val" style="color:${m.color}">${sd[m.key]}</span></div>`).join('')}${sd.verdict?`<div class="score-verdict">"${sd.verdict}"</div>`:''}${att>0?`<div class="penalty-notice">⚠ Attempt ${att+1} — score adjusted</div>`:''}</div>`;
+      if(sd.overall!==undefined)state.scores[q.id]=Object.assign({},sd,{attempts:att+1});
+      var metrics=[
+        {key:'structure',label:'Structure',color:'#00e5cc'},
+        {key:'confidence',label:'Confidence',color:'#22c55e'},
+        {key:'technical_depth',label:'Technical Depth',color:'#f97316'},
+        {key:'consulting_readiness',label:'Consulting Readiness',color:'#a78bfa'},
+        {key:'overall',label:'OVERALL',color:'#00e5cc'}
+      ];
+      scoreHTML='<div class="score-card">';
+      metrics.forEach(function(m){
+        if(sd[m.key]===undefined||isNaN(sd[m.key]))return;
+        scoreHTML+='<div class="score-row">';
+        scoreHTML+='<span class="score-lbl">'+m.label+'</span>';
+        scoreHTML+='<div class="score-bar-bg"><div class="score-bar-fill" style="width:'+(sd[m.key]*10)+'%;background:'+m.color+'"></div></div>';
+        scoreHTML+='<span class="score-val" style="color:'+m.color+'">'+sd[m.key]+'</span>';
+        scoreHTML+='</div>';
+      });
+      if(sd.verdict)scoreHTML+='<div class="score-verdict">"'+sd.verdict+'"</div>';
+      if(att>0)scoreHTML+='<div class="penalty-notice">Attempt '+(att+1)+' — score adjusted</div>';
+      scoreHTML+='</div>';
     }
-    document.getElementById('loadingMsg')?.remove();
-    history.push({role:'coach',content:clean+(scoreHTML?`\n\n${scoreHTML}`:'')});
+    var lm=document.getElementById('loadingMsg');
+    if(lm)lm.remove();
+    history.push({role:'coach',content:clean+(scoreHTML?'\n\n'+scoreHTML:'')});
     renderChat(q);renderSidebar();state.questionDone[q.id]=true;
     showEndPanel(getEndMsg(),q);
   }catch(err){
-    document.getElementById('loadingMsg')?.remove();
-    history.push({role:'coach',content:`⚠️ ${err.message}\n\nCheck your API key is valid and that you're serving over http:// not file://`});
-    renderChat(q);document.getElementById('submitBtn').disabled=false;inp.disabled=false;
+    var lm2=document.getElementById('loadingMsg');
+    if(lm2)lm2.remove();
+    history.push({role:'coach',content:'Error: '+err.message+'\n\nCheck your API key is valid.'});
+    renderChat(q);
+    document.getElementById('submitBtn').disabled=false;
+    inp.disabled=false;
   }
   state.isLoading=false;
 }
 
 function buildMessages(q,latest){
-  const h=state.histories[q.id];
-  const yours=h.filter(m=>m.role==='you');const theirs=h.filter(m=>m.role==='coach');
-  const msgs=[];
-  for(let i=0;i<yours.length-1;i++){msgs.push({role:'user',content:yours[i].content});if(theirs[i])msgs.push({role:'assistant',content:stripHTML(theirs[i].content)});}
-  msgs.push({role:'user',content:latest});return msgs;
+  var h=state.histories[q.id];
+  var yours=[];var theirs=[];
+  for(var i=0;i<h.length;i++){
+    if(h[i].role==='you')yours.push(h[i]);
+    else theirs.push(h[i]);
+  }
+  var msgs=[];
+  for(var j=0;j<yours.length-1;j++){
+    msgs.push({role:'user',content:yours[j].content});
+    if(theirs[j])msgs.push({role:'assistant',content:stripHTML(theirs[j].content)});
+  }
+  msgs.push({role:'user',content:latest});
+  return msgs;
 }
+
 function stripHTML(s){return s.replace(/<[^>]*>/g,'').replace(/\n\n+/g,'\n').trim();}
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
 function getEndMsg(){
-  const msgs={warm:`Good effort. Let's keep the momentum.`,technical:`Noted. Moving on.`,adversarial:`We'll revisit that in the debrief. Moving on.`,hr:`Thank you. Let's continue.`,curious:`Interesting — let's move forward.`};
-  const isLast=state.currentIdx===QUESTIONS.length-1;
-  return(msgs[cfg.personality]||`Let's move on.`)+(isLast?' Final question — let's see your results.':'');
+  var msgs={
+    warm:'Good effort. Keep the momentum going.',
+    technical:'Noted. Moving on.',
+    adversarial:'We will revisit that in the debrief. Moving on.',
+    hr:'Thank you. Next question.',
+    curious:'Interesting. Let us move forward.'
+  };
+  var isLast=state.currentIdx===QUESTIONS.length-1;
+  var base=msgs[cfg.personality]||'Moving on.';
+  return base+(isLast?' That was the final question. Let us look at your results.':'');
 }
+
 function showEndPanel(msg,q){
   document.getElementById('inputZone').style.display='none';
   document.getElementById('qEndPanel').classList.add('visible');
   document.getElementById('qEndMsg').textContent=msg;
-  const att=state.attempts[q.id]||0;const rem=MAX_DOOVER-att;
+  var att=state.attempts[q.id]||0;var rem=MAX_DOOVER-att;
   document.getElementById('btnDoover').disabled=rem<=0;
-  document.getElementById('dooverCount').textContent=rem>0?`${rem} do-over${rem!==1?'s':''} left`:'No do-overs left';
-  document.getElementById('btnNext').textContent=state.currentIdx===QUESTIONS.length-1?'View Results →':'Next Question →';
+  document.getElementById('dooverCount').textContent=rem>0?(rem+' do-over'+(rem!==1?'s':'')+' left'):'No do-overs left';
+  document.getElementById('btnNext').textContent=state.currentIdx===QUESTIONS.length-1?'View Results':'Next Question';
 }
-function advanceQuestion(){clearInterval(state.timerInterval);const n=state.currentIdx+1;n>=QUESTIONS.length?showSummary():loadQuestion(n);}
+
+function advanceQuestion(){
+  clearInterval(state.timerInterval);
+  var n=state.currentIdx+1;
+  if(n>=QUESTIONS.length)showSummary();
+  else loadQuestion(n);
+}
+
 function doOver(){
-  const q=QUESTIONS[state.currentIdx];const att=state.attempts[q.id]||0;if(att>=MAX_DOOVER)return;
-  state.attempts[q.id]=att+1;state.histories[q.id]=[];state.scores[q.id]=null;state.questionDone[q.id]=false;
-  document.getElementById('qEndPanel').classList.remove('visible');document.getElementById('inputZone').style.display='block';
-  document.getElementById('answerInput').disabled=false;document.getElementById('submitBtn').disabled=false;
+  var q=QUESTIONS[state.currentIdx];
+  var att=state.attempts[q.id]||0;
+  if(att>=MAX_DOOVER)return;
+  state.attempts[q.id]=att+1;
+  state.histories[q.id]=[];
+  state.scores[q.id]=null;
+  state.questionDone[q.id]=false;
+  document.getElementById('qEndPanel').classList.remove('visible');
+  document.getElementById('inputZone').style.display='block';
+  document.getElementById('answerInput').disabled=false;
+  document.getElementById('submitBtn').disabled=false;
   renderAttempts(q);renderChat(q);renderSidebar();
-  startTimer(TIME_LIMITS[cfg.difficulty][q.tag]||120);document.getElementById('answerInput').focus();
+  startTimer(TIME_LIMITS[cfg.difficulty][q.tag]||120);
+  document.getElementById('answerInput').focus();
 }
 
 function exportSession(){
-  const session={version:'PrepAIred-v0.3',exported:new Date().toISOString(),sessionStart:state.sessionStart,config:{personality:cfg.personality,format:cfg.format,difficulty:cfg.difficulty,provider:cfg.provider},questions:QUESTIONS.map(q=>({id:q.id,tag:q.tag,text:q.text,score:state.scores[q.id]||null,attempts:state.attempts[q.id]||0,transcript:(state.histories[q.id]||[]).filter(m=>m.role==='you')}))};
-  const blob=new Blob([JSON.stringify(session,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`prepaired-${new Date().toISOString().split('T')[0]}.json`;a.click();URL.revokeObjectURL(a.href);
+  var session={
+    version:'PrepAIred-v0.3.1',
+    exported:new Date().toISOString(),
+    sessionStart:state.sessionStart,
+    config:{personality:cfg.personality,format:cfg.format,difficulty:cfg.difficulty,provider:cfg.provider},
+    questions:[]
+  };
+  for(var i=0;i<QUESTIONS.length;i++){
+    var q=QUESTIONS[i];
+    var transcript=[];
+    var h=state.histories[q.id]||[];
+    for(var j=0;j<h.length;j++){if(h[j].role==='you')transcript.push(h[j]);}
+    session.questions.push({id:q.id,tag:q.tag,text:q.text,score:state.scores[q.id]||null,attempts:state.attempts[q.id]||0,transcript:transcript});
+  }
+  var blob=new Blob([JSON.stringify(session,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='prepaired-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 function recordOutcome(el,outcome){
-  document.querySelectorAll('.outcome-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');
-  const sc=Object.values(state.scores).filter(s=>s?.overall);
-  const avg=sc.length?(sc.reduce((a,s)=>a+s.overall,0)/sc.length).toFixed(1):'—';
-  try{const prev=JSON.parse(localStorage.getItem('prepaired_outcomes')||'[]');prev.push({date:new Date().toISOString(),outcome,avgScore:avg,provider:cfg.provider,difficulty:cfg.difficulty});localStorage.setItem('prepaired_outcomes',JSON.stringify(prev.slice(-50)));}catch(e){}
+  document.querySelectorAll('.outcome-btn').forEach(function(b){b.classList.remove('selected');});
+  el.classList.add('selected');
+  var sc=[];
+  for(var k in state.scores){if(state.scores[k]&&state.scores[k].overall)sc.push(state.scores[k].overall);}
+  var avg=sc.length?(sc.reduce(function(a,b){return a+b;},0)/sc.length).toFixed(1):'na';
+  try{
+    var prev=JSON.parse(localStorage.getItem('prepaired_outcomes')||'[]');
+    prev.push({date:new Date().toISOString(),outcome:outcome,avgScore:avg,provider:cfg.provider,difficulty:cfg.difficulty});
+    localStorage.setItem('prepaired_outcomes',JSON.stringify(prev.slice(-50)));
+  }catch(e){}
 }
 
-function getAvgScore(){const sc=Object.values(state.scores).filter(s=>s?.overall);return sc.length?(sc.reduce((a,s)=>a+s.overall,0)/sc.length).toFixed(1):'—';}
+function getAvgScore(){
+  var sc=[];
+  for(var k in state.scores){if(state.scores[k]&&state.scores[k].overall)sc.push(state.scores[k].overall);}
+  return sc.length?(sc.reduce(function(a,b){return a+b;},0)/sc.length).toFixed(1):'--';
+}
 
 function showSummary(){
   clearInterval(state.timerInterval);
   document.getElementById('interviewScreen').style.display='none';
   document.getElementById('summaryScreen').style.display='block';
-  const p=PERSONALITIES[cfg.personality];
-  const provLabels={anthropic:'Claude Haiku',openai:'GPT-4o-mini',groq:'Llama 3 (Groq)'};
-  document.getElementById('summaryMeta').textContent=`${p.icon} ${p.label} · ${cfg.format==='panel'?'Panel':'1:1'} · ${cfg.difficulty} · ${provLabels[cfg.provider]||cfg.provider}`;
-  const avg=getAvgScore();
-  const bigScore=document.getElementById('bigScore');bigScore.textContent=avg;
-  bigScore.style.color=parseFloat(avg)>=7?'var(--green)':parseFloat(avg)>=5?'var(--orange)':'var(--red)';
-  const dims=['structure','confidence','technical_depth','consulting_readiness'];
-  const dL={structure:'Structure',confidence:'Confidence',technical_depth:'Technical Depth',consulting_readiness:'Consulting'};
-  const dC={structure:'#00e5cc',confidence:'#22c55e',technical_depth:'#f97316',consulting_readiness:'#a78bfa'};
-  const scored=QUESTIONS.filter(q=>state.scores[q.id]?.overall);
-  let bHTML='';
-  dims.forEach(d=>{
-    const vals=scored.filter(q=>state.scores[q.id]?.[d]!==undefined).map(q=>state.scores[q.id][d]);
+  var p=PERSONALITIES[cfg.personality];
+  var provLabels={anthropic:'Claude Haiku',openai:'GPT-4o-mini',groq:'Llama 3 (Groq)'};
+  document.getElementById('summaryMeta').textContent=p.label+' \u00b7 '+(cfg.format==='panel'?'Panel':'1:1')+' \u00b7 '+cfg.difficulty+' \u00b7 '+(provLabels[cfg.provider]||cfg.provider);
+  var avg=getAvgScore();
+  var bigScore=document.getElementById('bigScore');
+  bigScore.textContent=avg;
+  var avgNum=parseFloat(avg);
+  bigScore.style.color=avgNum>=7?'var(--green)':avgNum>=5?'var(--orange)':'var(--red)';
+  var dims=['structure','confidence','technical_depth','consulting_readiness'];
+  var dL={structure:'Structure',confidence:'Confidence',technical_depth:'Technical Depth',consulting_readiness:'Consulting'};
+  var dC={structure:'#00e5cc',confidence:'#22c55e',technical_depth:'#f97316',consulting_readiness:'#a78bfa'};
+  var scored=[];
+  for(var i=0;i<QUESTIONS.length;i++){if(state.scores[QUESTIONS[i].id]&&state.scores[QUESTIONS[i].id].overall)scored.push(QUESTIONS[i]);}
+  var bHTML='';
+  dims.forEach(function(d){
+    var vals=[];
+    scored.forEach(function(q){if(state.scores[q.id][d]!==undefined)vals.push(state.scores[q.id][d]);});
     if(!vals.length)return;
-    const a=(vals.reduce((x,y)=>x+y,0)/vals.length).toFixed(1);
-    bHTML+=`<div class="score-row"><span class="score-lbl" style="font-family:var(--mono);font-size:10px;color:var(--text-dim);min-width:140px;">${dL[d]}</span><div class="score-bar-bg"><div class="score-bar-fill" style="width:${a*10}%;background:${dC[d]}"></div></div><span class="score-val" style="color:${dC[d]};font-family:var(--mono);font-size:11px;">${a}</span></div>`;
+    var a=(vals.reduce(function(x,y){return x+y;},0)/vals.length).toFixed(1);
+    bHTML+='<div class="score-row"><span class="score-lbl" style="font-family:var(--mono);font-size:10px;color:var(--text-dim);min-width:140px;">'+dL[d]+'</span><div class="score-bar-bg"><div class="score-bar-fill" style="width:'+(a*10)+'%;background:'+dC[d]+'"></div></div><span class="score-val" style="color:'+dC[d]+';font-family:var(--mono);font-size:11px;">'+a+'</span></div>';
   });
   document.getElementById('summaryBreakdown').innerHTML=bHTML;
-  let qHTML='';
-  QUESTIONS.forEach(q=>{
-    const sc=state.scores[q.id];const att=state.attempts[q.id]||0;const col=tagColor(q.tag);
-    const sColor=sc?.overall>=7?'var(--green)':sc?.overall>=5?'var(--orange)':'var(--red)';
-    qHTML+=`<div class="summary-q-item"><div class="summary-q-top"><div><span style="background:${col.bg};color:${col.fg};font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:3px;letter-spacing:0.08em;text-transform:uppercase;">${q.tag}</span><div class="summary-q-text" style="margin-top:6px;">${q.text}</div></div><div class="summary-q-score" style="color:${sc?sColor:'var(--text-dim)'}">${sc?.overall??'—'}</div></div>${sc?.verdict?`<div class="summary-q-verdict">"${sc.verdict}"</div>`:`<div class="summary-q-verdict" style="color:var(--red)">Not answered</div>`}${att>0?`<div class="summary-q-attempts">↺ ${att} do-over${att!==1?'s':''} used</div>`:''}</div>`;
-  });
+  var qHTML='';
+  for(var j=0;j<QUESTIONS.length;j++){
+    var q=QUESTIONS[j];
+    var sc=state.scores[q.id];
+    var att=state.attempts[q.id]||0;
+    var col=tagColor(q.tag);
+    var sColor=sc&&sc.overall>=7?'var(--green)':sc&&sc.overall>=5?'var(--orange)':'var(--red)';
+    qHTML+='<div class="summary-q-item">';
+    qHTML+='<div class="summary-q-top">';
+    qHTML+='<div><span style="background:'+col.bg+';color:'+col.fg+';font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:3px;letter-spacing:0.08em;text-transform:uppercase;">'+q.tag+'</span>';
+    qHTML+='<div class="summary-q-text" style="margin-top:6px;">'+q.text+'</div></div>';
+    qHTML+='<div class="summary-q-score" style="color:'+(sc?sColor:'var(--text-dim)')+'">'+(sc?sc.overall:'--')+'</div>';
+    qHTML+='</div>';
+    if(sc&&sc.verdict)qHTML+='<div class="summary-q-verdict">"'+sc.verdict+'"</div>';
+    else qHTML+='<div class="summary-q-verdict" style="color:var(--red)">Not answered</div>';
+    if(att>0)qHTML+='<div class="summary-q-attempts">'+att+' do-over'+(att!==1?'s':'')+' used</div>';
+    qHTML+='</div>';
+  }
   document.getElementById('summaryQList').innerHTML=qHTML;
 }
 
-function exitInterview(){if(confirm('Exit this session?')){clearInterval(state.timerInterval);cfg.apiKey='';document.getElementById('interviewScreen').style.display='none';document.getElementById('landingPage').style.display='flex';}}
-function restartApp(){clearInterval(state.timerInterval);cfg.apiKey='';document.getElementById('summaryScreen').style.display='none';document.getElementById('landingPage').style.display='flex';document.getElementById('apiKeyInput').value='';document.getElementById('profileText').value='';document.getElementById('profileUrl').value='';}
+function exitInterview(){
+  if(confirm('Exit this session?')){
+    clearInterval(state.timerInterval);
+    cfg.apiKey='';
+    state.keyValidated=false;
+    document.getElementById('interviewScreen').style.display='none';
+    document.getElementById('landingPage').style.display='flex';
+  }
+}
+
+function restartApp(){
+  clearInterval(state.timerInterval);
+  cfg.apiKey='';
+  state.keyValidated=false;
+  document.getElementById('summaryScreen').style.display='none';
+  document.getElementById('landingPage').style.display='flex';
+  document.getElementById('apiKeyInput').value='';
+  var pt=document.getElementById('profileText');if(pt)pt.value='';
+  var pu=document.getElementById('profileUrl');if(pu)pu.value='';
+  setKeyStatus('idle','Paste your API key to validate');
+  document.getElementById('systemsGo').classList.remove('visible');
+  updateBeginBtn();
+}
 </script>
 </body>
 </html>
