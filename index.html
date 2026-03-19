@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- PrepAIred v0.4.1 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
+<!-- PrepAIred v0.4.2 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
 <meta name="description" content="PrepAIred — AI-powered interview simulator. Five personalities. Real time pressure. Honest scoring. Bring your own API key.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://api.groq.com https://api.openai.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
 <title>PrepAIred — HireAId</title>
@@ -474,16 +474,34 @@ textarea:disabled{opacity:0.4;}
             <div class="pack-unit">$0.67 / session</div>
           </a>
         </div>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:2px;">After purchasing, enter your email below to verify and load your credits.</div>
-        <div class="api-input-wrap">
-          <input type="email" class="setup-input" id="creditEmail" placeholder="you@example.com" oninput="onCreditEmailInput()" style="padding-right:14px;" />
+
+        <!-- Step 1: email -->
+        <div id="creditStep1">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-bottom:6px;">Enter the email you purchased with &mdash; we will send a verification code.</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="email" class="setup-input" id="creditEmail" placeholder="you@example.com" style="flex:1;" onkeydown="if(event.key==='Enter')requestOtp()" />
+            <button onclick="requestOtp()" id="otpBtn" style="background:var(--border2);color:var(--text);border:1px solid var(--border2);font-family:var(--mono);font-size:11px;padding:10px 14px;border-radius:6px;cursor:pointer;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Send code &rarr;</button>
+          </div>
+          <div class="key-status idle" id="creditStatus" style="margin-top:8px;"><div class="key-status-dot"></div><span id="creditStatusText">Enter your email to get started</span></div>
         </div>
-        <div class="key-status idle" id="creditStatus"><div class="key-status-dot"></div><span id="creditStatusText">Enter the email you used to purchase</span></div>
+
+        <!-- Step 2: OTP (hidden until code sent) -->
+        <div id="creditStep2" style="display:none;flex-direction:column;gap:8px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);">Check your inbox for a 6-digit code. It expires in 10 minutes.</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" class="setup-input" id="otpInput" placeholder="123 456" maxlength="7" style="flex:1;letter-spacing:0.2em;font-size:16px;text-align:center;" onkeydown="if(event.key==='Enter')verifyOtp()" oninput="this.value=this.value.replace(/[^0-9 ]/g,'')" />
+            <button onclick="verifyOtp()" id="verifyBtn" style="background:var(--cyan);color:#000;border:none;font-family:var(--mono);font-size:11px;font-weight:700;padding:10px 14px;border-radius:6px;cursor:pointer;white-space:nowrap;">Verify</button>
+          </div>
+          <button onclick="resetCreditFlow()" style="background:none;border:none;color:var(--text-dim);font-family:var(--mono);font-size:10px;cursor:pointer;text-align:left;padding:0;">&#8592; Use a different email</button>
+          <div class="key-status idle" id="otpStatus" style="margin-top:0;"><div class="key-status-dot"></div><span id="otpStatusText">Enter the code from your email</span></div>
+        </div>
+
+        <!-- Systems go (hidden until verified) -->
         <div class="systems-go" id="creditSystemsGo">
-          <div class="sg-title">&#10003; Credits verified</div>
+          <div class="sg-title">&#10003; Verified &mdash; ready to go</div>
           <div class="sg-row"><span class="sg-check">&#10003;</span><span id="creditCountDisplay">— credits remaining</span></div>
           <div class="sg-row"><span class="sg-check">&#10003;</span><span>Claude Haiku &mdash; full PrepAIred experience</span></div>
-          <div class="sg-row"><span class="sg-check">&#10003;</span><span>1 credit will be used per session</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>1 credit used per session</span></div>
         </div>
       </div>
     </div>
@@ -827,51 +845,64 @@ function selectMode(el){
   state.keyValidated=false; updateBeginBtn();
 }
 
-var creditCheckTimer=null;
-function onCreditEmailInput(){
-  state.keyValidated=false; updateBeginBtn();
-  var email=document.getElementById('creditEmail').value.trim();
-  if(!email||!email.includes('@')){
-    setCreditStatus('idle','Enter the email you used to purchase');
-    document.getElementById('creditSystemsGo').classList.remove('visible'); return;
-  }
-  setCreditStatus('checking','Looking up your credits...');
-  clearTimeout(creditCheckTimer); creditCheckTimer=setTimeout(verifyCredits,800);
+function setStatus(elId, textElId, cls, text){
+  var el=document.getElementById(elId); if(!el)return;
+  el.className='key-status '+cls;
+  var tel=document.getElementById(textElId); if(tel)tel.textContent=text;
 }
-function setCreditStatus(cls,text){
-  var el=document.getElementById('creditStatus'); el.className='key-status '+cls;
-  document.getElementById('creditStatusText').textContent=text;
-}
-async function verifyCredits(){
+async function requestOtp(){
   var email=document.getElementById('creditEmail').value.trim().toLowerCase();
-  if(!email){return;}
-  setCreditStatus('checking','Verifying with server...');
+  if(!email||!email.includes('@')){ setStatus('creditStatus','creditStatusText','invalid','Enter a valid email'); return; }
+  var btn=document.getElementById('otpBtn'); btn.disabled=true; btn.textContent='Sending...';
+  setStatus('creditStatus','creditStatusText','checking','Sending verification code...');
   try{
-    var resp=await fetch(WORKER_URL+'/auth/verify',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email:email})
-    });
+    var resp=await fetch(WORKER_URL+'/auth/request-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})});
     var data=await resp.json();
     if(!resp.ok||data.error){
-      setCreditStatus('invalid',data.error||'No credits found for this email');
-      document.getElementById('creditSystemsGo').classList.remove('visible');
-      state.keyValidated=false;
+      setStatus('creditStatus','creditStatusText','invalid',data.error||'Failed to send code');
+      btn.disabled=false; btn.textContent='Send code →';
     } else {
-      setCreditStatus('valid','Credits verified — ready to go');
-      cfg.sessionToken=data.token;
-      cfg.creditsRemaining=data.credits;
-      cfg.provider='credits';
-      document.getElementById('creditCountDisplay').textContent=data.credits+' credit'+(data.credits!==1?'s':'')+' remaining';
-      document.getElementById('creditSystemsGo').classList.add('visible');
-      state.keyValidated=true;
+      setStatus('creditStatus','creditStatusText','valid','Code sent! Check your inbox.');
+      document.getElementById('creditStep1').style.display='none';
+      document.getElementById('creditStep2').style.display='flex';
+      setTimeout(function(){document.getElementById('otpInput').focus();},100);
     }
   }catch(e){
-    setCreditStatus('invalid','Server unreachable: '+e.message.substring(0,50));
-    state.keyValidated=false;
-    document.getElementById('creditSystemsGo').classList.remove('visible');
+    setStatus('creditStatus','creditStatusText','invalid','Server unreachable');
+    btn.disabled=false; btn.textContent='Send code →';
   }
-  updateBeginBtn();
+}
+async function verifyOtp(){
+  var email=document.getElementById('creditEmail').value.trim().toLowerCase();
+  var code=document.getElementById('otpInput').value.replace(/\s/g,'').trim();
+  if(code.length!==6){ setStatus('otpStatus','otpStatusText','invalid','Enter the 6-digit code'); return; }
+  var btn=document.getElementById('verifyBtn'); btn.disabled=true; btn.textContent='Checking...';
+  setStatus('otpStatus','otpStatusText','checking','Verifying code...');
+  try{
+    var resp=await fetch(WORKER_URL+'/auth/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,code:code})});
+    var data=await resp.json();
+    if(!resp.ok||data.error){
+      setStatus('otpStatus','otpStatusText','invalid',data.error||'Verification failed');
+      btn.disabled=false; btn.textContent='Verify';
+    } else {
+      cfg.sessionToken=data.token; cfg.creditsRemaining=data.credits; cfg.provider='credits';
+      document.getElementById('creditStep2').style.display='none';
+      document.getElementById('creditSystemsGo').classList.add('visible');
+      document.getElementById('creditCountDisplay').textContent=data.credits+' credit'+(data.credits!==1?'s':'')+' remaining';
+      state.keyValidated=true; updateBeginBtn();
+    }
+  }catch(e){
+    setStatus('otpStatus','otpStatusText','invalid','Server unreachable');
+    btn.disabled=false; btn.textContent='Verify';
+  }
+}
+function resetCreditFlow(){
+  document.getElementById('creditStep1').style.display='block';
+  document.getElementById('creditStep2').style.display='none';
+  document.getElementById('creditSystemsGo').classList.remove('visible');
+  document.getElementById('otpInput').value='';
+  setStatus('creditStatus','creditStatusText','idle','Enter your email to get started');
+  state.keyValidated=false; updateBeginBtn();
 }
 
 // ─── JD HANDLING ─────────────────────────────────────────────────────────────
@@ -1403,6 +1434,9 @@ function restartApp(){
   var jt=document.getElementById('jdText'); if(jt)jt.value='';
   cfg.jd=''; cfg.jdSource='none';
   document.getElementById('jdFileStatus').classList.remove('visible');
+  var cs1=document.getElementById('creditStep1'); if(cs1)cs1.style.display='block';
+  var cs2=document.getElementById('creditStep2'); if(cs2)cs2.style.display='none';
+  var oi=document.getElementById('otpInput'); if(oi)oi.value='';
   setKeyStatus('idle','Paste your API key to validate');
   document.getElementById('systemsGo').classList.remove('visible');
   updateBeginBtn();
