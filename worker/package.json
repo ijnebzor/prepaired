@@ -1,0 +1,16 @@
+{
+  "name": "prepaired-api",
+  "version": "1.0.0",
+  "description": "PrepAIred credit proxy worker — Cloudflare Workers + Whop",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:prod": "wrangler deploy --env production",
+    "tail": "wrangler tail",
+    "kv:create": "wrangler kv:namespace create CREDITS"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
