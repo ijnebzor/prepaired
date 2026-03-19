@@ -1,0 +1,25 @@
+name = "prepaired-api"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Worker runs on the free plan — no CPU time issues for this workload
+# Deploy to: prepaired-api.YOUR-SUBDOMAIN.workers.dev
+# Or add a custom route after deploying (e.g. api.prepaired.ijneb.dev)
+
+[[kv_namespaces]]
+binding = "CREDITS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_YOUR_KV_NAMESPACE_PREVIEW_ID"
+
+# Secrets — set via CLI, never commit to git:
+#   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put WHOP_WEBHOOK_SECRET
+#   wrangler secret put SESSION_SECRET
+#
+# To generate SESSION_SECRET locally:
+#   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+[env.production]
+name = "prepaired-api"
+route = { pattern = "api.prepaired.ijneb.dev/*", zone_name = "ijneb.dev" }
