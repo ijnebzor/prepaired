@@ -3,451 +3,629 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PrepAIred — Deploy Guide</title>
+<title>PrepAIred — Deploy Guide v2</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap');
-:root {
-  --bg:#000;--surface:#0a0a0a;--border:#1a1a1a;--border2:#222;
+:root{
+  --bg:#000;--s1:#080808;--s2:#0f0f0f;--b1:#1c1c1c;--b2:#2a2a2a;
   --cyan:#00e5cc;--green:#22c55e;--orange:#f97316;--yellow:#eab308;
-  --red:#ef4444;--purple:#a78bfa;
-  --text:#d1d5db;--text-dim:#4b5563;--text-bright:#f9fafb;
-  --mono:'JetBrains Mono',monospace;--display:'Syne',sans-serif;
+  --red:#ef4444;--purple:#a78bfa;--blue:#60a5fa;
+  --t1:#f0f0f0;--t2:#a0a0a0;--t3:#555;
+  --mono:'JetBrains Mono',monospace;--head:'Syne',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:14px;line-height:1.7;padding:0;}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.01) 2px,rgba(255,255,255,0.01) 3px);}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:var(--mono);font-size:13px;line-height:1.75;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.008) 2px,rgba(255,255,255,0.008) 3px);pointer-events:none;z-index:9999;}
 
-.page{max-width:860px;margin:0 auto;padding:60px 32px 120px;}
+/* layout */
+.wrap{max-width:900px;margin:0 auto;padding:64px 28px 140px;}
 
-/* Header */
-.header{margin-bottom:64px;}
-.header-label{font-size:10px;color:var(--cyan);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
-.header-label::before{content:'';width:32px;height:1px;background:var(--cyan);}
-h1{font-family:var(--display);font-size:52px;font-weight:800;color:var(--text-bright);letter-spacing:-0.03em;line-height:1;}
-h1 span{color:var(--cyan);}
-.header-sub{margin-top:16px;font-size:13px;color:var(--text-dim);max-width:540px;line-height:1.7;}
+/* header */
+.hdr{margin-bottom:72px;padding-bottom:40px;border-bottom:1px solid var(--b1);}
+.hdr-tag{font-size:10px;color:var(--cyan);letter-spacing:.35em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.hdr-tag::before{content:'';width:28px;height:1px;background:var(--cyan);}
+h1{font-family:var(--head);font-size:clamp(44px,7vw,72px);font-weight:800;line-height:.95;letter-spacing:-.03em;color:var(--t1);margin-bottom:16px;}
+h1 em{color:var(--cyan);font-style:normal;}
+.hdr-sub{font-size:13px;color:var(--t2);max-width:520px;line-height:1.75;}
 
-/* Overview */
-.overview{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:64px;}
-.ov-card{background:var(--bg);padding:24px;display:flex;flex-direction:column;gap:8px;}
-.ov-icon{font-size:24px;}
-.ov-title{font-size:12px;font-weight:700;color:var(--text-bright);letter-spacing:0.05em;}
-.ov-desc{font-size:11px;color:var(--text-dim);line-height:1.6;}
+/* section labels */
+.sec-label{font-size:10px;color:var(--t3);letter-spacing:.25em;text-transform:uppercase;margin:64px 0 0;padding-bottom:16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;}
+.sec-badge{font-size:9px;padding:2px 8px;border-radius:3px;letter-spacing:.08em;}
+.badge-cli{background:rgba(34,197,94,.08);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.badge-browser{background:rgba(234,179,8,.08);color:var(--yellow);border:1px solid rgba(234,179,8,.2);}
+.badge-both{background:rgba(96,165,250,.08);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
 
-/* Steps */
-.step-block{margin-bottom:48px;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.step-header{display:flex;align-items:flex-start;gap:20px;padding:24px 28px;background:var(--surface);border-bottom:1px solid var(--border);}
-.step-num{font-family:var(--display);font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:0.15em;text-transform:uppercase;white-space:nowrap;padding-top:2px;}
-.step-title-block{}
-.step-title{font-family:var(--display);font-size:20px;font-weight:700;color:var(--text-bright);letter-spacing:-0.01em;}
-.step-subtitle{font-size:11px;color:var(--text-dim);margin-top:4px;}
-.step-where{display:inline-flex;align-items:center;gap:6px;font-size:10px;padding:2px 8px;border-radius:3px;margin-top:8px;letter-spacing:0.05em;text-transform:uppercase;}
-.step-where.cli{background:rgba(34,197,94,0.08);color:var(--green);border:1px solid rgba(34,197,94,0.2);}
-.step-where.browser{background:rgba(234,179,8,0.08);color:var(--yellow);border:1px solid rgba(234,179,8,0.2);}
-.step-where.both{background:rgba(167,139,250,0.08);color:var(--purple);border:1px solid rgba(167,139,250,0.2);}
-.step-body{padding:28px;}
+/* step blocks */
+.step{margin-top:32px;border:1px solid var(--b1);border-radius:8px;overflow:hidden;}
+.step-hdr{display:grid;grid-template-columns:60px 1fr;gap:0;border-bottom:1px solid var(--b1);}
+.step-n{background:var(--s1);padding:20px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;font-family:var(--head);color:var(--b2);border-right:1px solid var(--b1);}
+.step-n.active{color:var(--cyan);}
+.step-meta{padding:18px 24px;background:var(--s1);}
+.step-title{font-family:var(--head);font-size:17px;font-weight:700;color:var(--t1);letter-spacing:-.01em;}
+.step-desc{font-size:11px;color:var(--t2);margin-top:4px;line-height:1.6;}
+.step-body{padding:24px;}
 
-/* Code blocks */
-pre{background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:16px 18px;overflow-x:auto;margin:12px 0;font-size:12px;line-height:1.7;position:relative;}
-pre .comment{color:var(--text-dim);}
+/* code */
+pre{position:relative;background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:16px 18px 16px 18px;margin:12px 0;overflow-x:auto;font-size:12px;line-height:1.8;tab-size:2;}
+pre .cmt{color:var(--t3);}
 pre .cmd{color:var(--cyan);}
 pre .str{color:var(--green);}
 pre .key{color:var(--orange);}
-pre .out{color:var(--text-dim);}
-.copy-btn{position:absolute;top:10px;right:10px;background:var(--border2);border:none;color:var(--text-dim);font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer;transition:all 0.15s;letter-spacing:0.05em;}
-.copy-btn:hover{background:var(--border);color:var(--cyan);}
+pre .out{color:var(--t3);font-style:italic;}
+pre .hi{color:var(--yellow);}
+.copy{position:absolute;top:10px;right:10px;background:var(--b2);border:none;color:var(--t2);font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:3px;cursor:pointer;transition:all .15s;}
+.copy:hover{background:var(--b1);color:var(--cyan);}
+code{background:var(--s2);border:1px solid var(--b1);padding:1px 6px;border-radius:3px;font-size:11px;color:var(--cyan);}
 
-/* Inline code */
-code{background:var(--surface);border:1px solid var(--border2);padding:1px 6px;border-radius:3px;font-size:12px;color:var(--cyan);}
+/* info boxes */
+.box{display:flex;gap:14px;padding:14px 16px;border-radius:6px;margin:14px 0;font-size:12px;line-height:1.65;}
+.box-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.box-body{color:var(--t2);}
+.box-body strong{color:var(--t1);}
+.box.note{background:rgba(0,229,204,.04);border:1px solid rgba(0,229,204,.12);}
+.box.warn{background:rgba(234,179,8,.04);border:1px solid rgba(234,179,8,.12);}
+.box.tip{background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.15);}
+.box.danger{background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);}
 
-/* Tables */
-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12px;}
-th{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;border-bottom:1px solid var(--border2);text-align:left;}
-td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);}
-td:first-child{color:var(--text-bright);}
+/* tables */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:12px;}
+th{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--t3);padding:9px 12px;border-bottom:1px solid var(--b2);text-align:left;font-weight:500;}
+td{padding:10px 12px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top;}
+td:first-child{color:var(--t1);}
 tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
 
-/* Notes */
-.note{display:flex;gap:12px;padding:12px 16px;border-radius:6px;margin:12px 0;font-size:12px;line-height:1.6;}
-.note.info{background:rgba(0,229,204,0.04);border:1px solid rgba(0,229,204,0.15);}
-.note.warn{background:rgba(234,179,8,0.04);border:1px solid rgba(234,179,8,0.15);}
-.note.tip{background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.15);}
-.note-icon{flex-shrink:0;font-size:14px;}
-.note-body{color:var(--text-dim);}
-.note-body strong{color:var(--text);}
+/* cost model */
+.cost-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:8px;overflow:hidden;margin:16px 0;}
+.cost-card{background:var(--s1);padding:20px;}
+.cost-card.featured{background:rgba(0,229,204,.04);border-left:2px solid var(--cyan);}
+.cost-pack{font-size:10px;color:var(--t3);letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;}
+.cost-price{font-family:var(--head);font-size:28px;font-weight:800;color:var(--t1);line-height:1;}
+.cost-unit{font-size:10px;color:var(--t3);margin-top:4px;}
+.cost-rows{margin-top:14px;display:flex;flex-direction:column;gap:5px;}
+.cost-row{display:flex;justify-content:space-between;font-size:11px;}
+.cost-lbl{color:var(--t3);}
+.cost-val{color:var(--t2);}
+.cost-val.green{color:var(--green);}
+.cost-val.cyan{color:var(--cyan);}
 
-/* Checklist */
-.checklist{display:flex;flex-direction:column;gap:6px;margin:12px 0;}
-.check-item{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--text-dim);line-height:1.5;}
-.check-item::before{content:'○';color:var(--border2);flex-shrink:0;margin-top:1px;}
-.check-item.done::before{content:'✓';color:var(--green);}
-.check-item strong{color:var(--text);}
+.profit-block{background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:28px;margin:20px 0;}
+.profit-title{font-size:10px;color:var(--cyan);letter-spacing:.25em;text-transform:uppercase;margin-bottom:20px;}
+.profit-scenario{display:grid;grid-template-columns:1fr 80px 80px 80px 80px;gap:0;padding:10px 0;border-bottom:1px solid var(--b1);align-items:center;font-size:11px;}
+.profit-scenario:last-child{border-bottom:none;}
+.profit-scenario.hd{font-size:9px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:12px;}
+.profit-scenario .lbl{color:var(--t1);}
+.profit-scenario .num{text-align:right;color:var(--t2);}
+.profit-scenario .num.rev{color:var(--t1);}
+.profit-scenario .num.net{color:var(--green);}
+.profit-scenario .num.pct{color:var(--cyan);}
 
-/* Architecture diagram */
-.arch{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:24px;margin:16px 0;}
-.arch-row{display:flex;align-items:center;gap:0;margin-bottom:0;}
-.arch-box{padding:10px 16px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:0.05em;text-align:center;min-width:140px;}
-.arch-box.browser{background:rgba(0,229,204,0.08);border:1px solid rgba(0,229,204,0.25);color:var(--cyan);}
-.arch-box.worker{background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);color:var(--yellow);}
-.arch-box.anthropic{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);color:var(--green);}
-.arch-box.whop{background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);color:var(--purple);}
-.arch-box.kv{background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);color:var(--orange);}
-.arch-arrow{color:var(--text-dim);font-size:18px;padding:0 12px;flex-shrink:0;}
-.arch-label{font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px;}
-.arch-cols{display:grid;grid-template-columns:140px 40px 140px 40px 120px;align-items:center;gap:0;margin-bottom:8px;}
-.arch-side{display:grid;grid-template-columns:140px 40px 140px;align-items:center;margin-top:12px;}
-.arch-note{font-size:10px;color:var(--text-dim);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.arch-flow{display:flex;align-items:center;gap:0;margin:20px 0;flex-wrap:wrap;}
+.arch-box{padding:10px 16px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.04em;white-space:nowrap;}
+.arch-box.browser{background:rgba(0,229,204,.08);border:1px solid rgba(0,229,204,.25);color:var(--cyan);}
+.arch-box.worker{background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.25);color:var(--yellow);}
+.arch-box.anthropic{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:var(--green);}
+.arch-box.whop{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);color:var(--purple);}
+.arch-box.kv{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);color:var(--orange);}
+.arch-box.resend{background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25);color:var(--blue);}
+.arch-arrow{color:var(--b2);padding:0 10px;font-size:16px;}
+.arch-label{font-size:10px;color:var(--t3);text-align:center;margin-top:5px;}
 
-/* Final section */
-.final{background:rgba(0,229,204,0.04);border:1px solid rgba(0,229,204,0.15);border-radius:8px;padding:28px;margin-top:48px;}
-.final-title{font-family:var(--display);font-size:20px;font-weight:700;color:var(--cyan);margin-bottom:16px;}
-.cmd-ref{display:flex;flex-direction:column;gap:8px;}
-.cmd-line{display:flex;align-items:flex-start;gap:16px;padding:8px 0;border-bottom:1px solid var(--border);}
-.cmd-line:last-child{border-bottom:none;}
-.cmd-desc{font-size:11px;color:var(--text-dim);min-width:180px;flex-shrink:0;}
-.cmd-code{font-size:11px;color:var(--cyan);}
+.ref-grid{display:flex;flex-direction:column;gap:0;border:1px solid var(--b1);border-radius:8px;overflow:hidden;margin-top:16px;}
+.ref-row{display:grid;grid-template-columns:200px 1fr;border-bottom:1px solid var(--b1);}
+.ref-row:last-child{border-bottom:none;}
+.ref-desc{padding:14px 16px;font-size:11px;color:var(--t3);border-right:1px solid var(--b1);background:var(--s1);}
+.ref-cmd{padding:14px 16px;font-size:11px;color:var(--cyan);font-family:var(--mono);}
 
-p{margin:8px 0;font-size:13px;color:var(--text);}
-ul{padding-left:20px;margin:8px 0;}
-li{font-size:12px;color:var(--text-dim);margin-bottom:4px;line-height:1.6;}
-li strong{color:var(--text);}
-h3{font-size:12px;font-weight:700;color:var(--text-bright);letter-spacing:0.1em;text-transform:uppercase;margin:20px 0 10px;}
+h3{font-size:11px;font-weight:700;color:var(--t1);letter-spacing:.12em;text-transform:uppercase;margin:20px 0 10px;}
+p{font-size:12px;color:var(--t2);margin:8px 0;line-height:1.75;}
+a{color:var(--cyan);text-decoration:none;}
+a:hover{text-decoration:underline;}
+ul{padding-left:18px;margin:8px 0;}
+li{font-size:12px;color:var(--t2);margin-bottom:5px;line-height:1.65;}
+li strong{color:var(--t1);}
+hr{border:none;border-top:1px solid var(--b1);margin:40px 0;}
 </style>
 </head>
 <body>
-<div class="page">
+<div class="wrap">
 
-  <div class="header">
-    <div class="header-label">PrepAIred — Worker Deploy Guide</div>
-    <h1>Get <span>paid.</span></h1>
-    <p class="header-sub">Set up the Cloudflare Worker and Whop payment integration. This is all CLI — the only browser time is creating Whop products and wiring up the webhook.</p>
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-tag">PrepAIred — Worker Deploy Guide v2</div>
+  <h1>Ship it.<br><em>Get paid.</em></h1>
+  <p class="hdr-sub">Full setup guide — Cloudflare Worker, Whop payments, Resend OTP verification, admin gifting, and cost model. All CLI except where noted.</p>
+</div>
+
+<!-- ARCHITECTURE -->
+<div class="sec-label">Architecture</div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-body">
+    <p style="color:var(--t3);font-size:11px;margin-bottom:20px;">Read once. Everything else will make sense.</p>
+
+    <h3>Purchase flow</h3>
+    <div class="arch-flow">
+      <div><div class="arch-box whop">Whop</div><div class="arch-label">User buys pack</div></div>
+      <div class="arch-arrow">→</div>
+      <div><div class="arch-box worker">CF Worker</div><div class="arch-label">/webhook/whop</div></div>
+      <div class="arch-arrow">→</div>
+      <div><div class="arch-box kv">KV Store</div><div class="arch-label">email → credits</div></div>
+    </div>
+
+    <h3>OTP verification flow</h3>
+    <div class="arch-flow">
+      <div><div class="arch-box browser">Browser</div><div class="arch-label">enters email</div></div>
+      <div class="arch-arrow">→</div>
+      <div><div class="arch-box worker">CF Worker</div><div class="arch-label">/auth/request-otp</div></div>
+      <div class="arch-arrow">→</div>
+      <div><div class="arch-box resend">Resend</div><div class="arch-label">sends 6-digit code</div></div>
+      <div class="arch-arrow">→</div>
+      <div><div class="arch-box browser">Browser</div><div class="arch-label">enters code → token issued</div></div>
+    </div>
+
+    <h3>Interview flow</h3>
+    <div class="arch-flow">
+      <div><div class="arch-box browser">Browser</div><div class="arch-label">session token + prompt</div></div>
+      <div class="arch-arrow">→</div>
+      <div><div class="arch-box worker">CF Worker</div><div class="arch-label">/api/chat — validate, proxy, decrement</div></div>
+      <div class="arch-arrow">→</div>
+      <div><div class="arch-box anthropic">Haiku 4.5</div><div class="arch-label">AI response</div></div>
+    </div>
+
+    <div class="box note" style="margin-top:16px;">
+      <div class="box-icon">→</div>
+      <div class="box-body"><strong>Free users</strong> (Groq BYOK) bypass the Worker entirely and call the Groq API directly from their browser. The Worker is only used for paid credit sessions.</div>
+    </div>
+
+    <h3>Security: why email alone was not enough</h3>
+    <p>The old flow issued a session token to anyone who typed an email address. Anyone who knew a friend's email could use their credits. The new OTP flow requires access to the actual inbox. The 6-digit code expires in 10 minutes, has a 5-attempt lockout, and uses constant-time comparison to prevent timing attacks.</p>
   </div>
+</div>
 
-  <!-- Overview -->
-  <div class="overview">
-    <div class="ov-card">
-      <div class="ov-icon">⚡</div>
-      <div class="ov-title">Cloudflare Worker</div>
-      <div class="ov-desc">Validates sessions, checks credit balance, proxies Anthropic API calls, decrements credits on success.</div>
+<!-- PROVIDER CHANGE -->
+<div class="sec-label">Provider change <span class="sec-badge badge-cli">index.html</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-body">
+    <p>The BYOK section now offers <strong>Groq only</strong> (free, no credit card) plus the paid credits option. Anthropic and OpenAI BYOK keys are removed from the free path to keep the UX clean and push users toward credit packs.</p>
+    <div class="box tip">
+      <div class="box-icon">💡</div>
+      <div class="box-body"><strong>Groq free key link:</strong> <a href="https://console.groq.com" target="_blank">console.groq.com</a> — no credit card, instant. Models: Llama 3.1 8B. This is the free tier. Paid credits use Claude Haiku 4.5 which is noticeably better.</div>
     </div>
-    <div class="ov-card">
-      <div class="ov-icon">💳</div>
-      <div class="ov-title">Whop Payments</div>
-      <div class="ov-desc">Handles checkout. Fires a webhook on purchase → Worker stores credits in KV keyed by email.</div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-icon">🔑</div>
-      <div class="ov-title">KV Credit Ledger</div>
-      <div class="ov-desc">Cloudflare KV stores credits per email. 1 credit = 1 full interview session (10 questions × 3 turns).</div>
+    <p>This change is already in <code>index.html</code> on the repo. The BYOK provider tabs now show only Groq. The "Use Credits" tab gets Claude Haiku 4.5 via the Worker.</p>
+  </div>
+</div>
+
+<!-- PREREQUISITES -->
+<div class="sec-label">Before you start</div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-body">
+    <table>
+      <tr><th>Requirement</th><th>Where to get it</th><th>Cost</th></tr>
+      <tr><td>Node.js 18+</td><td><code>node --version</code> to check. nodejs.org if missing.</td><td>Free</td></tr>
+      <tr><td>Cloudflare account</td><td>cloudflare.com — free tier is sufficient</td><td>Free</td></tr>
+      <tr><td>Whop seller account</td><td>whop.com/sell</td><td>Free + 3% fee on sales</td></tr>
+      <tr><td>Resend account</td><td>resend.com — for sending OTP emails</td><td>Free up to 3k emails/month</td></tr>
+      <tr><td>Anthropic pool key</td><td>console.anthropic.com — create a separate key just for PrepAIred</td><td>Pay-per-use</td></tr>
+      <tr><td>Verified sending domain</td><td>Add a DNS record in Cloudflare to verify ijneb.dev with Resend</td><td>Free</td></tr>
+      <tr><td>Repo cloned locally</td><td><code>git clone https://github.com/ijnebzor/prepaired.git</code></td><td>Free</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="sec-label">Step 1 — Install and log in <span class="sec-badge badge-cli">CLI</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-hdr">
+    <div class="step-n active">1</div>
+    <div class="step-meta">
+      <div class="step-title">Cloudflare Wrangler setup</div>
+      <div class="step-desc">Install wrangler, log in, and create the KV namespace that stores credit balances.</div>
     </div>
   </div>
-
-  <!-- Architecture -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Architecture</div>
-      <div class="step-title-block">
-        <div class="step-title">How the pieces connect</div>
-        <div class="step-subtitle">Read this once before starting — it'll make the steps make sense</div>
-      </div>
-    </div>
-    <div class="step-body">
-      <div class="arch">
-        <div style="font-size:11px;color:var(--text-dim);margin-bottom:16px;letter-spacing:0.1em;text-transform:uppercase;">Purchase flow</div>
-        <div class="arch-cols">
-          <div><div class="arch-box whop">Whop</div><div class="arch-label">User buys credit pack</div></div>
-          <div class="arch-arrow">→</div>
-          <div><div class="arch-box worker">CF Worker</div><div class="arch-label">/webhook/whop</div></div>
-          <div class="arch-arrow">→</div>
-          <div><div class="arch-box kv">KV Store</div><div class="arch-label">email → credits</div></div>
-        </div>
-        <div style="height:20px;border-left:1px solid var(--border2);margin-left:70px;margin-top:8px;"></div>
-        <div style="font-size:11px;color:var(--text-dim);margin-bottom:16px;letter-spacing:0.1em;text-transform:uppercase;">Interview flow</div>
-        <div class="arch-cols">
-          <div><div class="arch-box browser">Browser</div><div class="arch-label">User's PrepAIred session</div></div>
-          <div class="arch-arrow">→</div>
-          <div><div class="arch-box worker">CF Worker</div><div class="arch-label">/api/chat (validates + proxies)</div></div>
-          <div class="arch-arrow">→</div>
-          <div><div class="arch-box anthropic">Anthropic</div><div class="arch-label">Claude Haiku</div></div>
-        </div>
-        <div class="arch-note">Free users (BYOK) still call Anthropic directly from the browser — the Worker is only used for paid credit sessions.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Prerequisites -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Before you start</div>
-      <div class="step-title-block">
-        <div class="step-title">Prerequisites</div>
-        <div class="step-subtitle">Have these ready before running the script</div>
-      </div>
-    </div>
-    <div class="step-body">
-      <div class="checklist">
-        <div class="check-item"><strong>Node.js 18+</strong> — check with <code>node --version</code></div>
-        <div class="check-item"><strong>Cloudflare account</strong> — free tier at cloudflare.com</div>
-        <div class="check-item"><strong>Whop seller account</strong> — whop.com/sell</div>
-        <div class="check-item"><strong>Anthropic pool key</strong> — a separate key just for PrepAIred (not your personal one). Create at console.anthropic.com</div>
-        <div class="check-item"><strong>Repo cloned locally</strong> — <code>git clone https://github.com/ijnebzor/prepaired.git</code></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 1: Run the script -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Step 1</div>
-      <div class="step-title-block">
-        <div class="step-title">Run the setup script</div>
-        <div class="step-subtitle">This handles everything — KV creation, secrets, deploy, and patching index.html</div>
-        <span class="step-where cli">Terminal</span>
-      </div>
-    </div>
-    <div class="step-body">
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="comment"># Clone and enter the worker directory</span>
-<span class="cmd">git clone https://github.com/ijnebzor/prepaired.git</span>
+  <div class="step-body">
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmt"># Enter the worker directory</span>
 <span class="cmd">cd prepaired/worker</span>
-
-<span class="comment"># Make the script executable and run it</span>
-<span class="cmd">chmod +x setup.sh</span>
-<span class="cmd">./setup.sh</span></pre>
-
-      <div class="note info">
-        <div class="note-icon">→</div>
-        <div class="note-body">The script is interactive — it'll pause and ask for input at each step. It auto-patches <code>index.html</code> with your Worker URL and Whop URLs at the end.</div>
-      </div>
-
-      <div class="note warn">
-        <div class="note-icon">⚠</div>
-        <div class="note-body"><strong>On macOS</strong>, <code>sed -i</code> syntax differs. If you hit an error on the patch step, run: <code>brew install gnu-sed</code> then re-run the script, or do the index.html edits manually (Step 7 below).</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 2: Prefer manual? -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Step 2 (alt)</div>
-      <div class="step-title-block">
-        <div class="step-title">Prefer manual steps?</div>
-        <div class="step-subtitle">Run these commands in order if you'd rather not use the script</div>
-        <span class="step-where cli">Terminal</span>
-      </div>
-    </div>
-    <div class="step-body">
-      <h3>Install and login</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="cmd">cd prepaired/worker</span>
 <span class="cmd">npm install</span>
-<span class="cmd">npx wrangler login</span></pre>
 
-      <h3>Create KV namespace</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="cmd">npx wrangler kv:namespace create CREDITS</span>
-<span class="out"># → { binding = "CREDITS", id = "abc123abc123abc123" }</span>
+<span class="cmt"># Log into your Cloudflare account (opens browser)</span>
+<span class="cmd">npx wrangler login</span>
+
+<span class="cmt"># Create the KV namespace for the credit ledger</span>
+<span class="cmd">npx wrangler kv:namespace create CREDITS</span>
+<span class="out"># → id = "abc123abc123..."  ← copy this</span>
 
 <span class="cmd">npx wrangler kv:namespace create CREDITS --preview</span>
-<span class="out"># → { binding = "CREDITS", preview_id = "def456def456def456" }</span></pre>
-      <p>Copy both IDs into <code>wrangler.toml</code> — replace the two <code>REPLACE_WITH_...</code> placeholders.</p>
+<span class="out"># → preview_id = "def456def456..."  ← copy this</span></pre>
 
-      <h3>Set secrets</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="comment"># Your Anthropic pool key</span>
-<span class="cmd">npx wrangler secret put ANTHROPIC_API_KEY</span>
+    <p>Open <code>wrangler.toml</code> and replace both placeholder values with the IDs you just copied.</p>
 
-<span class="comment"># Generate and set session signing secret</span>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmt"># wrangler.toml — update these two lines</span>
+<span class="key">id</span> = <span class="str">"abc123abc123..."</span>
+<span class="key">preview_id</span> = <span class="str">"def456def456..."</span></pre>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="sec-label">Step 2 — Set all secrets <span class="sec-badge badge-cli">CLI</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-hdr">
+    <div class="step-n active">2</div>
+    <div class="step-meta">
+      <div class="step-title">Six secrets — set once, never committed</div>
+      <div class="step-desc">Run each command. Wrangler prompts for the value with hidden input. Nothing is stored locally.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <table>
+      <tr><th>Secret</th><th>Where to get it</th></tr>
+      <tr><td><code>ANTHROPIC_API_KEY</code></td><td>console.anthropic.com → API Keys → Create Key. Use a dedicated key for PrepAIred.</td></tr>
+      <tr><td><code>SESSION_SECRET</code></td><td>Generate locally (command below). 32 random bytes.</td></tr>
+      <tr><td><code>ADMIN_SECRET</code></td><td>Generate locally (same method). Used to protect the gift endpoint.</td></tr>
+      <tr><td><code>WHOP_WEBHOOK_SECRET</code></td><td>Whop Dashboard → Developer → Webhooks → Signing secret. Set after Step 4.</td></tr>
+      <tr><td><code>RESEND_API_KEY</code></td><td>resend.com → API Keys → Create.</td></tr>
+      <tr><td><code>FROM_EMAIL</code></td><td>e.g. <code>prepaired@ijneb.dev</code>. Must be verified in Resend (Step 3).</td></tr>
+    </table>
+
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmt"># Generate random secrets (run twice, save outputs)</span>
 <span class="cmd">node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</span>
+
+<span class="cmt"># Set each secret (wrangler will prompt for value)</span>
+<span class="cmd">npx wrangler secret put ANTHROPIC_API_KEY</span>
 <span class="cmd">npx wrangler secret put SESSION_SECRET</span>
+<span class="cmd">npx wrangler secret put ADMIN_SECRET</span>
+<span class="cmd">npx wrangler secret put RESEND_API_KEY</span>
+<span class="cmd">npx wrangler secret put FROM_EMAIL</span>
+<span class="cmt"># Skip WHOP_WEBHOOK_SECRET for now — set it after Step 4</span></pre>
 
-<span class="comment"># Whop webhook secret — set after creating the webhook in Step 5</span>
-<span class="cmd">npx wrangler secret put WHOP_WEBHOOK_SECRET</span></pre>
+    <div class="box warn">
+      <div class="box-icon">⚠</div>
+      <div class="box-body"><strong>Keep ADMIN_SECRET safe.</strong> Anyone with it can grant unlimited credits to any email. Store it in a password manager, not in Slack or notes.</div>
+    </div>
+  </div>
+</div>
 
-      <h3>Deploy</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="cmd">npx wrangler deploy</span>
+<!-- STEP 3 -->
+<div class="sec-label">Step 3 — Verify sending domain in Resend <span class="sec-badge badge-browser">Browser</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-hdr">
+    <div class="step-n active">3</div>
+    <div class="step-meta">
+      <div class="step-title">Add DNS record so Resend can send from ijneb.dev</div>
+      <div class="step-desc">One DNS record in Cloudflare. Takes 2 minutes.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <ul>
+      <li>Resend Dashboard → <strong>Domains → Add Domain</strong> → enter <code>ijneb.dev</code></li>
+      <li>Resend shows you a TXT record to add. Copy it.</li>
+      <li>Cloudflare Dashboard → ijneb.dev → <strong>DNS → Add Record</strong> → paste the TXT record</li>
+      <li>Back in Resend → click <strong>Verify</strong>. Usually instant since ijneb.dev is already on Cloudflare.</li>
+    </ul>
+    <div class="box note">
+      <div class="box-icon">→</div>
+      <div class="box-body">Once verified, OTP emails will come from <code>PrepAIred &lt;prepaired@ijneb.dev&gt;</code>. Free tier covers 3,000 emails/month — more than enough at this scale.</div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="sec-label">Step 4 — Create Whop products <span class="sec-badge badge-browser">Browser — whop.com/dashboard</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-hdr">
+    <div class="step-n active">4</div>
+    <div class="step-meta">
+      <div class="step-title">Three products — one-time purchases</div>
+      <div class="step-desc">Use these exact names. The Worker pattern-matches on "single", "five", "fifteen" in the plan ID.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <table>
+      <tr><th>Product name</th><th>Price</th><th>Credits granted</th><th>Per interview</th></tr>
+      <tr><td>PrepAIred Single</td><td>$2.00</td><td>1</td><td>$2.00</td></tr>
+      <tr><td>PrepAIred 5-Pack</td><td>$5.00</td><td>5</td><td>$1.00</td></tr>
+      <tr><td>PrepAIred 15-Pack</td><td>$10.00</td><td>15</td><td>$0.67</td></tr>
+    </table>
+    <ul style="margin-top:12px;">
+      <li>Type: <strong>One-time purchase</strong> (not subscription)</li>
+      <li>Copy the checkout URL for each product — you'll need them in Step 7</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="sec-label">Step 5 — Deploy the Worker <span class="sec-badge badge-cli">CLI</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-hdr">
+    <div class="step-n active">5</div>
+    <div class="step-meta">
+      <div class="step-title">Deploy and verify</div>
+      <div class="step-desc">One command. Worker goes live at a workers.dev URL immediately.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">npx wrangler deploy</span>
 <span class="out"># → Published prepaired-api (https://prepaired-api.YOURNAME.workers.dev)</span>
 
-<span class="comment"># Verify it's live</span>
+<span class="cmt"># Confirm it's alive</span>
 <span class="cmd">curl https://prepaired-api.YOURNAME.workers.dev/health</span>
-<span class="out"># → {"status":"ok","version":"1.0.0"}</span></pre>
+<span class="out"># → {"status":"ok","version":"1.1.0"}</span></pre>
+
+    <p>Note your Worker URL — you'll need it in Step 7.</p>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="sec-label">Step 6 — Configure Whop webhook <span class="sec-badge badge-both">Browser + CLI</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-hdr">
+    <div class="step-n active">6</div>
+    <div class="step-meta">
+      <div class="step-title">Wire Whop purchases to the Worker</div>
+      <div class="step-desc">Whop fires a signed webhook every time someone buys. The Worker receives it and adds credits.</div>
     </div>
   </div>
+  <div class="step-body">
+    <p>Whop Dashboard → <strong>Developer → Webhooks → Add endpoint</strong></p>
+    <pre><button class="copy" onclick="cp(this)">copy</button>https://prepaired-api.YOURNAME.workers.dev/webhook/whop</pre>
+    <p>Subscribe to: <strong>payment.succeeded</strong> and <strong>membership.created</strong></p>
+    <p>Copy the signing secret Whop shows you, then:</p>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">npx wrangler secret put WHOP_WEBHOOK_SECRET</span>
+<span class="cmt"># Paste the signing secret when prompted</span></pre>
+  </div>
+</div>
 
-  <!-- Step 3: Whop -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Step 3</div>
-      <div class="step-title-block">
-        <div class="step-title">Create Whop products</div>
-        <div class="step-subtitle">Three one-time purchase products — these names matter for the credit resolver</div>
-        <span class="step-where browser">Browser — whop.com/dashboard</span>
-      </div>
-    </div>
-    <div class="step-body">
-      <p>Dashboard → Products → New Product → set type to <strong>One-time purchase</strong></p>
-      <table>
-        <tr><th>Product name</th><th>Price</th><th>Credits</th><th>Per session</th></tr>
-        <tr><td>PrepAIred Single</td><td>$2.00</td><td>1</td><td>$2.00</td></tr>
-        <tr><td>PrepAIred 5-Pack</td><td>$5.00</td><td>5</td><td>$1.00</td></tr>
-        <tr><td>PrepAIred 15-Pack</td><td>$10.00</td><td>15</td><td>$0.67</td></tr>
-      </table>
-      <div class="note tip">
-        <div class="note-icon">💡</div>
-        <div class="note-body">Copy the checkout URL for each product — you'll need to paste them into <code>index.html</code> in Step 6. They look like <code>https://whop.com/checkout/plan_...</code></div>
-      </div>
+<!-- STEP 7 -->
+<div class="sec-label">Step 7 — Patch index.html <span class="sec-badge badge-cli">CLI</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-hdr">
+    <div class="step-n active">7</div>
+    <div class="step-meta">
+      <div class="step-title">Wire Worker URL and Whop checkout links into the frontend</div>
+      <div class="step-desc">Three sed commands then push. macOS users: see the note below.</div>
     </div>
   </div>
-
-  <!-- Step 4: Webhook -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Step 4</div>
-      <div class="step-title-block">
-        <div class="step-title">Configure Whop webhook</div>
-        <div class="step-subtitle">Whop notifies your Worker every time someone buys credits</div>
-        <span class="step-where both">Browser + Terminal</span>
-      </div>
-    </div>
-    <div class="step-body">
-      <p>In Whop: <strong>Dashboard → Developer → Webhooks → Add endpoint</strong></p>
-
-      <h3>Endpoint URL</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button>https://prepaired-api.YOURNAME.workers.dev/webhook/whop</pre>
-
-      <h3>Events to subscribe</h3>
-      <div class="checklist">
-        <div class="check-item done"><strong>payment.succeeded</strong></div>
-        <div class="check-item done"><strong>membership.created</strong></div>
-      </div>
-
-      <p style="margin-top:16px;">After saving, Whop shows you a <strong>Signing Secret</strong>. Copy it, then:</p>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="cmd">npx wrangler secret put WHOP_WEBHOOK_SECRET</span>
-<span class="out"># Paste the signing secret when prompted</span></pre>
-    </div>
-  </div>
-
-  <!-- Step 5: Custom domain -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Step 5</div>
-      <div class="step-title-block">
-        <div class="step-title">Custom domain <span style="font-size:12px;color:var(--text-dim);font-weight:400;">(optional but clean)</span></div>
-        <div class="step-subtitle">Point api.prepaired.ijneb.dev at your Worker</div>
-        <span class="step-where both">Browser + Terminal</span>
-      </div>
-    </div>
-    <div class="step-body">
-      <p>In Cloudflare Dashboard → Workers &amp; Pages → prepaired-api → Settings → Domains → Add Custom Domain:</p>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button>api.prepaired.ijneb.dev</pre>
-      <p>Cloudflare handles the DNS automatically since ijneb.dev is already on Cloudflare.</p>
-      <p style="margin-top:12px;">Then redeploy with the production env config:</p>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="cmd">npx wrangler deploy --env production</span></pre>
-    </div>
-  </div>
-
-  <!-- Step 6: Update index.html -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Step 6</div>
-      <div class="step-title-block">
-        <div class="step-title">Update index.html</div>
-        <div class="step-subtitle">Wire in your Worker URL and Whop checkout URLs, then push</div>
-        <span class="step-where cli">Terminal</span>
-      </div>
-    </div>
-    <div class="step-body">
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="comment"># From the repo root</span>
+  <div class="step-body">
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmt"># From the repo root</span>
 <span class="cmd">cd ..</span>
 
-<span class="comment"># Replace Worker URL (use your actual URL)</span>
-<span class="cmd">sed -i "s|https://prepaired-api.ijnebzor.workers.dev|https://api.prepaired.ijneb.dev|g" index.html</span>
+<span class="cmt"># Replace Worker URL placeholder</span>
+<span class="cmd">sed -i "s|https://prepaired-api.ijnebzor.workers.dev|https://prepaired-api.YOURNAME.workers.dev|g" index.html</span>
 
-<span class="comment"># Replace Whop checkout URLs</span>
+<span class="cmt"># Replace Whop checkout URLs</span>
 <span class="cmd">sed -i "s|WHOP_SINGLE_URL|https://whop.com/checkout/plan_YOUR_SINGLE_ID|g" index.html</span>
 <span class="cmd">sed -i "s|WHOP_5PACK_URL|https://whop.com/checkout/plan_YOUR_5PACK_ID|g" index.html</span>
 <span class="cmd">sed -i "s|WHOP_15PACK_URL|https://whop.com/checkout/plan_YOUR_15PACK_ID|g" index.html</span>
 
-<span class="comment"># Commit and push</span>
+<span class="cmt"># Push to GitHub → GitHub Pages auto-deploys in ~2 minutes</span>
 <span class="cmd">git add index.html</span>
-<span class="cmd">git commit -m "config: wire up Worker URL and Whop checkout URLs"</span>
+<span class="cmd">git commit -m "config: wire Worker URL and Whop checkout URLs"</span>
 <span class="cmd">git push</span></pre>
 
-      <div class="note warn">
-        <div class="note-icon">⚠</div>
-        <div class="note-body"><strong>macOS:</strong> use <code>sed -i ''</code> instead of <code>sed -i</code>, or install gnu-sed with <code>brew install gnu-sed && alias sed=gsed</code></div>
-      </div>
+    <div class="box warn">
+      <div class="box-icon">⚠</div>
+      <div class="box-body"><strong>macOS:</strong> <code>sed -i</code> requires an empty string argument: <code>sed -i '' "s|...|...|g"</code>. Or: <code>brew install gnu-sed && alias sed=gsed</code></div>
     </div>
   </div>
-
-  <!-- Step 7: Test -->
-  <div class="step-block">
-    <div class="step-header">
-      <div class="step-num">Step 7</div>
-      <div class="step-title-block">
-        <div class="step-title">Test end to end</div>
-        <div class="step-subtitle">Grant yourself test credits and verify the full flow before going live</div>
-        <span class="step-where cli">Terminal</span>
-      </div>
-    </div>
-    <div class="step-body">
-      <h3>Health check</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="cmd">curl https://api.prepaired.ijneb.dev/health</span>
-<span class="out">{"status":"ok","version":"1.0.0"}</span></pre>
-
-      <h3>Grant test credits to your email</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="cmd">npx wrangler kv:key put \</span>
-  <span class="cmd">--namespace-id=YOUR_KV_ID \</span>
-  <span class="str">"credits:you@youremail.com"</span> \
-  <span class="str">'{"credits":3,"email":"you@youremail.com","plan":"test","lastPurchase":"2026-03-20T00:00:00Z","totalPurchased":3}'</span></pre>
-
-      <h3>Verify the auth endpoint</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button><span class="cmd">curl -X POST https://api.prepaired.ijneb.dev/auth/verify \</span>
-  <span class="cmd">-H "Content-Type: application/json" \</span>
-  <span class="cmd">-d '{"email":"you@youremail.com"}'</span>
-
-<span class="out">{"ok":true,"token":"...","credits":3,"email":"you@youremail.com"}</span></pre>
-
-      <h3>Open the site and test the Credits tab</h3>
-      <pre><button class="copy-btn" onclick="copy(this)">copy</button>https://ijnebzor.github.io/prepaired</pre>
-      <p>Click <strong>Get PrepAIred</strong> → switch to <strong>Use Credits</strong> tab → enter your email → verify → begin interview.</p>
-    </div>
-  </div>
-
-  <!-- Reference commands -->
-  <div class="final">
-    <div class="final-title">Commands to keep handy</div>
-    <div class="cmd-ref">
-      <div class="cmd-line">
-        <div class="cmd-desc">Watch live Worker logs</div>
-        <div class="cmd-code">npx wrangler tail</div>
-      </div>
-      <div class="cmd-line">
-        <div class="cmd-desc">Check a user's credits</div>
-        <div class="cmd-code">npx wrangler kv:key get --namespace-id=KV_ID "credits:email@example.com"</div>
-      </div>
-      <div class="cmd-line">
-        <div class="cmd-desc">Grant credits manually</div>
-        <div class="cmd-code">npx wrangler kv:key put --namespace-id=KV_ID "credits:email" '{"credits":5,...}'</div>
-      </div>
-      <div class="cmd-line">
-        <div class="cmd-desc">Redeploy after code changes</div>
-        <div class="cmd-code">cd worker && npx wrangler deploy</div>
-      </div>
-      <div class="cmd-line">
-        <div class="cmd-desc">Cost per interview (Haiku)</div>
-        <div class="cmd-code">~$0.006 cost vs $2.00 revenue — 330× margin</div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
+<!-- STEP 8 -->
+<div class="sec-label">Step 8 — Test end to end <span class="sec-badge badge-cli">CLI</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-hdr">
+    <div class="step-n active">8</div>
+    <div class="step-meta">
+      <div class="step-title">Verify the full flow before going live</div>
+      <div class="step-desc">Grant yourself test credits and walk through the OTP flow.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <h3>1. Health check</h3>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">curl https://prepaired-api.YOURNAME.workers.dev/health</span>
+<span class="out">{"status":"ok","version":"1.1.0"}</span></pre>
+
+    <h3>2. Grant yourself test credits via admin endpoint</h3>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">curl -X POST https://prepaired-api.YOURNAME.workers.dev/admin/gift \</span>
+  <span class="cmd">-H "X-Admin-Secret: YOUR_ADMIN_SECRET" \</span>
+  <span class="cmd">-H "Content-Type: application/json" \</span>
+  <span class="cmd">-d '{"email": "your@email.com", "credits": 3, "note": "test"}'</span>
+<span class="out">{"ok":true,"gifted":1,"results":[{"email":"your@email.com","before":0,"after":3,"added":3}]}</span></pre>
+
+    <h3>3. Request an OTP</h3>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">curl -X POST https://prepaired-api.YOURNAME.workers.dev/auth/request-otp \</span>
+  <span class="cmd">-H "Content-Type: application/json" \</span>
+  <span class="cmd">-d '{"email": "your@email.com"}'</span>
+<span class="out">{"ok":true,"message":"Code sent to your@email.com. Valid for 10 minutes."}</span></pre>
+
+    <h3>4. Verify the code (from your inbox)</h3>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">curl -X POST https://prepaired-api.YOURNAME.workers.dev/auth/verify \</span>
+  <span class="cmd">-H "Content-Type: application/json" \</span>
+  <span class="cmd">-d '{"email": "your@email.com", "code": "123456"}'</span>
+<span class="out">{"ok":true,"token":"...","credits":3,"email":"your@email.com"}</span></pre>
+
+    <h3>5. Open the site and test the Credits tab</h3>
+    <pre><button class="copy" onclick="cp(this)">copy</button">https://ijnebzor.github.io/prepaired</pre>
+    <p>Click <strong>Get PrepAIred</strong> → <strong>Use Credits</strong> → enter your email → receive code → enter code → Systems Go panel appears → begin interview.</p>
+  </div>
+</div>
+
+<!-- ADMIN: GIFTING -->
+<div class="sec-label">Gifting credits to friends <span class="sec-badge badge-cli">CLI</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-body">
+    <p>One curl command. Works for single or bulk. The <code>note</code> field is stored in KV so you can track where credits came from.</p>
+
+    <h3>Single person</h3>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">curl -X POST https://prepaired-api.YOURNAME.workers.dev/admin/gift \</span>
+  <span class="cmd">-H "X-Admin-Secret: YOUR_ADMIN_SECRET" \</span>
+  <span class="cmd">-H "Content-Type: application/json" \</span>
+  <span class="cmd">-d '{"email": "friend@example.com", "credits": 5, "note": "beta access"}'</span></pre>
+
+    <h3>Multiple people at once (up to 100)</h3>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">curl -X POST https://prepaired-api.YOURNAME.workers.dev/admin/gift \</span>
+  <span class="cmd">-H "X-Admin-Secret: YOUR_ADMIN_SECRET" \</span>
+  <span class="cmd">-H "Content-Type: application/json" \</span>
+  <span class="cmd">-d '{</span>
+    <span class="str">"emails"</span><span class="cmd">: [</span><span class="str">"alice@ex.com"</span><span class="cmd">, </span><span class="str">"bob@ex.com"</span><span class="cmd">, </span><span class="str">"charlie@ex.com"</span><span class="cmd">],</span>
+    <span class="str">"credits"</span><span class="cmd">: 3,</span>
+    <span class="str">"note"</span><span class="cmd">: </span><span class="str">"launch cohort"</span>
+  <span class="cmd">}'</span>
+<span class="out">{"ok":true,"gifted":3,"results":[...]}</span></pre>
+
+    <h3>Check anyone's balance</h3>
+    <pre><button class="copy" onclick="cp(this)">copy</button"><span class="cmd">curl "https://prepaired-api.YOURNAME.workers.dev/admin/credits?email=friend@example.com" \</span>
+  <span class="cmd">-H "X-Admin-Secret: YOUR_ADMIN_SECRET"</span>
+<span class="out">{"credits":5,"email":"friend@example.com","plan":"beta access","found":true}</span></pre>
+
+    <div class="box tip">
+      <div class="box-icon">💡</div>
+      <div class="box-body">Gift recipients go through the same OTP flow as paying customers — they just have credits already loaded. They enter their email, get a code, verify it, and begin. No special path needed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- COST MODEL -->
+<div class="sec-label">Cost model — 100 interviews</div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-body">
+    <p style="color:var(--t3);font-size:11px;margin-bottom:20px;">Based on Claude Haiku 4.5 at $1.00/MTok input, $5.00/MTok output (current pricing as of March 2026).</p>
+
+    <h3>Per session cost basis</h3>
+    <table>
+      <tr><th>Component</th><th>Tokens</th><th>Cost</th></tr>
+      <tr><td>Input per API call (system prompt + history + answer)</td><td>~1,100</td><td>$0.0011</td></tr>
+      <tr><td>Output per API call (feedback + score on final turn)</td><td>~350</td><td>$0.00175</td></tr>
+      <tr><td>API calls per session (10 questions × 3 turns)</td><td>30 calls</td><td>—</td></tr>
+      <tr><td><strong>Total cost per interview session</strong></td><td>33k in / 10.5k out</td><td><strong>$0.0855</strong></td></tr>
+    </table>
+
+    <h3>Per-pack economics</h3>
+    <div class="cost-grid">
+      <div class="cost-card">
+        <div class="cost-pack">Single</div>
+        <div class="cost-price">$2.00</div>
+        <div class="cost-unit">1 interview</div>
+        <div class="cost-rows">
+          <div class="cost-row"><span class="cost-lbl">API cost</span><span class="cost-val">$0.0855</span></div>
+          <div class="cost-row"><span class="cost-lbl">Whop fee (3%)</span><span class="cost-val">$0.06</span></div>
+          <div class="cost-row"><span class="cost-lbl">Net profit</span><span class="cost-val green">$1.8545</span></div>
+          <div class="cost-row"><span class="cost-lbl">Margin</span><span class="cost-val cyan">92.7%</span></div>
+        </div>
+      </div>
+      <div class="cost-card featured">
+        <div class="cost-pack">5-Pack ← best value signal</div>
+        <div class="cost-price">$5.00</div>
+        <div class="cost-unit">5 interviews · $1.00/session</div>
+        <div class="cost-rows">
+          <div class="cost-row"><span class="cost-lbl">API cost</span><span class="cost-val">$0.4275</span></div>
+          <div class="cost-row"><span class="cost-lbl">Whop fee (3%)</span><span class="cost-val">$0.15</span></div>
+          <div class="cost-row"><span class="cost-lbl">Net profit</span><span class="cost-val green">$4.4225</span></div>
+          <div class="cost-row"><span class="cost-lbl">Margin</span><span class="cost-val cyan">88.5%</span></div>
+        </div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-pack">15-Pack</div>
+        <div class="cost-price">$10.00</div>
+        <div class="cost-unit">15 interviews · $0.67/session</div>
+        <div class="cost-rows">
+          <div class="cost-row"><span class="cost-lbl">API cost</span><span class="cost-val">$1.2825</span></div>
+          <div class="cost-row"><span class="cost-lbl">Whop fee (3%)</span><span class="cost-val">$0.30</span></div>
+          <div class="cost-row"><span class="cost-lbl">Net profit</span><span class="cost-val green">$8.4175</span></div>
+          <div class="cost-row"><span class="cost-lbl">Margin</span><span class="cost-val cyan">84.2%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>100 interviews — revenue scenarios</h3>
+    <div class="profit-block">
+      <div class="profit-title">Revenue · API cost · Whop fee · Net profit · Margin</div>
+      <div class="profit-scenario hd">
+        <div>Scenario</div>
+        <div class="num">Revenue</div>
+        <div class="num">API cost</div>
+        <div class="num">Net profit</div>
+        <div class="num">Margin</div>
+      </div>
+      <div class="profit-scenario">
+        <div class="lbl">All singles (100 × $2)</div>
+        <div class="num rev">$200.00</div>
+        <div class="num">$8.55</div>
+        <div class="num net">$185.45</div>
+        <div class="num pct">92.7%</div>
+      </div>
+      <div class="profit-scenario">
+        <div class="lbl">All 5-packs (20 × $5)</div>
+        <div class="num rev">$100.00</div>
+        <div class="num">$8.55</div>
+        <div class="num net">$88.45</div>
+        <div class="num pct">88.5%</div>
+      </div>
+      <div class="profit-scenario">
+        <div class="lbl">All 15-packs (7 × $10)</div>
+        <div class="num rev">$70.00</div>
+        <div class="num">$8.98</div>
+        <div class="num net">$58.92</div>
+        <div class="num pct">84.2%</div>
+      </div>
+      <div class="profit-scenario" style="background:rgba(0,229,204,.03);">
+        <div class="lbl" style="color:var(--cyan);">Realistic mix (30 single + 8×5pack + 2×15pack)</div>
+        <div class="num rev" style="color:var(--cyan);">$120.00</div>
+        <div class="num">$8.55</div>
+        <div class="num net" style="color:var(--cyan);">$107.85</div>
+        <div class="num pct" style="color:var(--cyan);">89.9%</div>
+      </div>
+    </div>
+
+    <h3>Infrastructure costs at this scale</h3>
+    <table>
+      <tr><th>Service</th><th>Usage at 100 sessions/month</th><th>Cost</th></tr>
+      <tr><td>Cloudflare Worker</td><td>~3,000 requests (30 calls × 100 sessions)</td><td>Free (100k/day included)</td></tr>
+      <tr><td>Cloudflare KV</td><td>~600 reads/writes</td><td>Free (100k reads/day included)</td></tr>
+      <tr><td>Resend</td><td>~150 emails (1.5 per session average)</td><td>Free (3,000/month included)</td></tr>
+      <tr><td>GitHub Pages</td><td>Unlimited</td><td>Free</td></tr>
+      <tr><td>Whop</td><td>3% of gross revenue</td><td>~$3.60 on $120 mixed revenue</td></tr>
+    </table>
+
+    <div class="box note" style="margin-top:16px;">
+      <div class="box-icon">→</div>
+      <div class="box-body"><strong>Bottom line:</strong> at 100 interviews with a realistic pack mix, revenue is ~$120, total costs (API + Whop) are ~$12, net is ~$108. Infrastructure is free at this scale. The margin stays above 84% across all pack types because Haiku 4.5 is genuinely cheap — each interview only costs $0.0855 in API calls.</div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTIONAL: CUSTOM DOMAIN -->
+<div class="sec-label">Optional — Custom domain <span class="sec-badge badge-both">Browser + CLI</span></div>
+<div class="step" style="margin-top:20px;">
+  <div class="step-body">
+    <p>Point <code>api.prepaired.ijneb.dev</code> at the Worker instead of using the workers.dev URL.</p>
+    <p>Cloudflare Dashboard → Workers &amp; Pages → prepaired-api → Settings → Domains → <strong>Add Custom Domain</strong> → enter <code>api.prepaired.ijneb.dev</code></p>
+    <p>Then update <code>wrangler.toml</code> and redeploy:</p>
+    <pre><button class="copy" onclick="cp(this)">copy</button><span class="cmd">npx wrangler deploy --env production</span></pre>
+    <p>Then re-run the index.html patch in Step 7 with <code>https://api.prepaired.ijneb.dev</code> as the Worker URL.</p>
+  </div>
+</div>
+
+<!-- REFERENCE COMMANDS -->
+<div class="sec-label">Reference — commands to keep handy</div>
+<div class="ref-grid" style="margin-top:20px;">
+  <div class="ref-row"><div class="ref-desc">Live Worker logs</div><div class="ref-cmd">npx wrangler tail</div></div>
+  <div class="ref-row"><div class="ref-desc">Check user credits</div><div class="ref-cmd">curl ".../admin/credits?email=x" -H "X-Admin-Secret: ..."</div></div>
+  <div class="ref-row"><div class="ref-desc">Gift credits (single)</div><div class="ref-cmd">curl -X POST .../admin/gift -d '{"email":"x","credits":5,"note":"y"}'</div></div>
+  <div class="ref-row"><div class="ref-desc">Gift credits (bulk)</div><div class="ref-cmd">curl -X POST .../admin/gift -d '{"emails":[...],"credits":3,"note":"y"}'</div></div>
+  <div class="ref-row"><div class="ref-desc">Redeploy after changes</div><div class="ref-cmd">cd worker && npx wrangler deploy</div></div>
+  <div class="ref-row"><div class="ref-desc">View all KV keys</div><div class="ref-cmd">npx wrangler kv:key list --namespace-id=KV_ID</div></div>
+  <div class="ref-row"><div class="ref-desc">Read a KV record</div><div class="ref-cmd">npx wrangler kv:key get --namespace-id=KV_ID "credits:email"</div></div>
+  <div class="ref-row"><div class="ref-desc">Resend free tier limit</div><div class="ref-cmd">3,000 emails/month. Paid plan: $20/month for 50k.</div></div>
+  <div class="ref-row"><div class="ref-desc">Whop fee</div><div class="ref-cmd">3% of gross revenue. No monthly fee on base plan.</div></div>
+</div>
+
+</div><!-- /wrap -->
+
 <script>
-function copy(btn) {
-  const pre = btn.parentElement;
-  const text = pre.innerText.replace('copy\n', '').replace(/^copy$/m, '').trim();
-  navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = 'copied';
-    setTimeout(() => btn.textContent = 'copy', 1500);
-  });
+function cp(btn){
+  const pre=btn.parentElement;
+  const text=pre.innerText.replace(/^copy\n/,'').trim();
+  navigator.clipboard.writeText(text).then(()=>{btn.textContent='✓';setTimeout(()=>btn.textContent='copy',1500);});
 }
 </script>
 </body>
