@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- PrepAIred v0.4.0 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
+<!-- PrepAIred v0.4.1 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
 <meta name="description" content="PrepAIred — AI-powered interview simulator. Five personalities. Real time pressure. Honest scoring. Bring your own API key.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://api.groq.com https://api.openai.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
 <title>PrepAIred — HireAId</title>
@@ -127,6 +127,25 @@ footer{padding:48px;border-top:1px solid var(--border);display:flex;align-items:
 .key-status.invalid .key-status-dot{background:var(--red);}
 .systems-go{display:none;flex-direction:column;gap:6px;padding:14px 16px;border-radius:8px;background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.2);}
 .systems-go.visible{display:flex;}
+/* CREDITS MODE */
+.mode-tabs{display:flex;gap:2px;background:var(--bg);padding:3px;border-radius:6px;border:1px solid var(--border2);margin-bottom:12px;}
+.mode-tab{flex:1;padding:7px;border-radius:4px;border:none;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:none;cursor:pointer;transition:all 0.15s;text-align:center;letter-spacing:0.04em;}
+.mode-tab.active{background:var(--surface2);color:var(--text-bright);}
+.mode-tab.credits-tab.active{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.25);}
+.mode-pane{display:none;flex-direction:column;gap:10px;}
+.mode-pane.active{display:flex;}
+.credits-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:12px;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);font-family:var(--mono);font-size:10px;color:var(--yellow);}
+.credits-counter{font-family:var(--mono);font-size:10px;color:var(--text-dim);display:flex;align-items:center;gap:8px;margin-top:4px;}
+.credits-counter span{color:var(--yellow);font-weight:700;}
+.buy-credits-link{font-family:var(--mono);font-size:11px;color:var(--cyan);text-decoration:none;border-bottom:1px solid rgba(0,229,204,0.3);}
+.buy-credits-link:hover{border-bottom-color:var(--cyan);}
+.credit-packs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;}
+.credit-pack{padding:12px;border:1px solid var(--border2);border-radius:8px;background:var(--bg);text-align:center;cursor:pointer;transition:all 0.15s;text-decoration:none;display:block;}
+.credit-pack:hover{border-color:var(--yellow);background:rgba(234,179,8,0.04);}
+.pack-price{font-family:var(--display);font-size:18px;font-weight:700;color:var(--text-bright);}
+.pack-count{font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:2px;}
+.pack-unit{font-family:var(--mono);font-size:9px;color:var(--yellow);margin-top:4px;}
+
 .sg-row{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text);}
 .sg-check{color:var(--green);font-size:12px;flex-shrink:0;}
 .sg-title{font-family:var(--display);font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
@@ -402,27 +421,70 @@ textarea:disabled{opacity:0.4;}
       <button class="modal-close" onclick="closeSetup()">&#10005;</button>
     </div>
 
-    <!-- API KEY -->
+    <!-- API KEY / CREDITS MODE -->
     <div class="setup-section">
-      <div class="setup-label">AI Provider</div>
-      <div class="provider-tabs">
-        <button class="provider-tab active" data-provider="anthropic" onclick="selectProvider(this)">Anthropic</button>
-        <button class="provider-tab" data-provider="openai" onclick="selectProvider(this)">OpenAI</button>
-        <button class="provider-tab free-tag" data-provider="groq" onclick="selectProvider(this)">Groq</button>
+      <div class="setup-label">How do you want to run this?</div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-mode="byok" onclick="selectMode(this)">My API Key</button>
+        <button class="mode-tab credits-tab" data-mode="credits" onclick="selectMode(this)">&#11088; Use Credits</button>
       </div>
-      <div class="provider-info visible" id="info-anthropic">Best quality. Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> &mdash; ~$0.02/session.</div>
-      <div class="provider-info" id="info-openai">GPT-4o-mini. Get a key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> &mdash; ~$0.03/session.</div>
-      <div class="provider-info" id="info-groq"><strong style="color:var(--green)">Free tier available.</strong> Llama 3 at speed. Get a key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> &mdash; no credit card needed.</div>
-      <div class="api-input-wrap">
-        <input type="password" class="api-input" id="apiKeyInput" placeholder="Paste your API key..." oninput="onKeyInput()" />
-        <div class="api-input-actions"><button class="toggle-vis" onclick="toggleKeyVis()" title="Show/hide key">&#128065;</button></div>
+
+      <!-- BYOK pane -->
+      <div class="mode-pane active" id="pane-byok">
+        <div class="provider-tabs">
+          <button class="provider-tab active" data-provider="anthropic" onclick="selectProvider(this)">Anthropic</button>
+          <button class="provider-tab" data-provider="openai" onclick="selectProvider(this)">OpenAI</button>
+          <button class="provider-tab free-tag" data-provider="groq" onclick="selectProvider(this)">Groq</button>
+        </div>
+        <div class="provider-info visible" id="info-anthropic">Best quality. Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> &mdash; ~$0.02/session.</div>
+        <div class="provider-info" id="info-openai">GPT-4o-mini. Get a key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> &mdash; ~$0.03/session.</div>
+        <div class="provider-info" id="info-groq"><strong style="color:var(--green)">Free tier available.</strong> Llama 3 at speed. Get a key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> &mdash; no credit card needed.</div>
+        <div class="api-input-wrap">
+          <input type="password" class="api-input" id="apiKeyInput" placeholder="Paste your API key..." oninput="onKeyInput()" />
+          <div class="api-input-actions"><button class="toggle-vis" onclick="toggleKeyVis()" title="Show/hide key">&#128065;</button></div>
+        </div>
+        <div class="key-status idle" id="keyStatus"><div class="key-status-dot"></div><span id="keyStatusText">Paste your API key to validate</span></div>
+        <div class="systems-go" id="systemsGo">
+          <div class="sg-title">&#10003; Systems go</div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>API key validated</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span id="sgProvider">Provider ready</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>Running in-browser &mdash; nothing stored server-side</span></div>
+        </div>
       </div>
-      <div class="key-status idle" id="keyStatus"><div class="key-status-dot"></div><span id="keyStatusText">Paste your API key to validate</span></div>
-      <div class="systems-go" id="systemsGo">
-        <div class="sg-title">&#10003; Systems go</div>
-        <div class="sg-row"><span class="sg-check">&#10003;</span><span>API key validated</span></div>
-        <div class="sg-row"><span class="sg-check">&#10003;</span><span id="sgProvider">Provider ready</span></div>
-        <div class="sg-row"><span class="sg-check">&#10003;</span><span>Running in-browser &mdash; nothing stored server-side</span></div>
+
+      <!-- Credits pane -->
+      <div class="mode-pane" id="pane-credits">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.6;">
+          No API key needed. Uses Claude Haiku via our servers. One credit = one full interview session.
+        </div>
+        <div class="credit-packs">
+          <a class="credit-pack" href="WHOP_SINGLE_URL" target="_blank">
+            <div class="pack-price">$2</div>
+            <div class="pack-count">1 interview</div>
+            <div class="pack-unit">$2.00 / session</div>
+          </a>
+          <a class="credit-pack" href="WHOP_5PACK_URL" target="_blank" style="border-color:rgba(234,179,8,0.3);background:rgba(234,179,8,0.03);">
+            <div class="pack-price" style="color:var(--yellow)">$5</div>
+            <div class="pack-count">5 interviews</div>
+            <div class="pack-unit">$1.00 / session</div>
+          </a>
+          <a class="credit-pack" href="WHOP_15PACK_URL" target="_blank">
+            <div class="pack-price">$10</div>
+            <div class="pack-count">15 interviews</div>
+            <div class="pack-unit">$0.67 / session</div>
+          </a>
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:2px;">After purchasing, enter your email below to verify and load your credits.</div>
+        <div class="api-input-wrap">
+          <input type="email" class="setup-input" id="creditEmail" placeholder="you@example.com" oninput="onCreditEmailInput()" style="padding-right:14px;" />
+        </div>
+        <div class="key-status idle" id="creditStatus"><div class="key-status-dot"></div><span id="creditStatusText">Enter the email you used to purchase</span></div>
+        <div class="systems-go" id="creditSystemsGo">
+          <div class="sg-title">&#10003; Credits verified</div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span id="creditCountDisplay">— credits remaining</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>Claude Haiku &mdash; full PrepAIred experience</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>1 credit will be used per session</span></div>
+        </div>
       </div>
     </div>
 
@@ -645,12 +707,17 @@ var PROVIDERS={
   }
 };
 
-var CHAR_LIMIT=600, MAX_DOOVER=3, MAX_TURNS=3; // 3 turns = initial answer + 2 follow-ups
+var CHAR_LIMIT=600, MAX_DOOVER=3, MAX_TURNS=3;
+
+// ─── WORKER CONFIG ────────────────────────────────────────────────────────────
+// Update this after deploying the Cloudflare Worker
+var WORKER_URL = 'https://prepaired-api.ijnebzor.workers.dev'; // 3 turns = initial answer + 2 follow-ups
 
 var cfg={
   apiKey:'', provider:'anthropic', personality:'adversarial',
   format:'panel', difficulty:'realistic',
-  profile:'', jd:'', jdSource:'none'
+  profile:'', jd:'', jdSource:'none',
+  useCredits:false, sessionToken:'', creditsRemaining:0
 };
 
 var state={
@@ -747,6 +814,64 @@ function updateBeginBtn(){
   } else {
     btn.classList.remove('ready'); btnText.textContent='Validate API key to continue'; btnArrow.style.display='none';
   }
+}
+
+// ─── MODE SELECTION (BYOK vs CREDITS) ────────────────────────────────────────
+function selectMode(el){
+  document.querySelectorAll('.mode-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  var mode=el.dataset.mode;
+  document.querySelectorAll('.mode-pane').forEach(function(p){p.classList.remove('active');});
+  var pane=document.getElementById('pane-'+mode); if(pane)pane.classList.add('active');
+  cfg.useCredits=(mode==='credits');
+  state.keyValidated=false; updateBeginBtn();
+}
+
+var creditCheckTimer=null;
+function onCreditEmailInput(){
+  state.keyValidated=false; updateBeginBtn();
+  var email=document.getElementById('creditEmail').value.trim();
+  if(!email||!email.includes('@')){
+    setCreditStatus('idle','Enter the email you used to purchase');
+    document.getElementById('creditSystemsGo').classList.remove('visible'); return;
+  }
+  setCreditStatus('checking','Looking up your credits...');
+  clearTimeout(creditCheckTimer); creditCheckTimer=setTimeout(verifyCredits,800);
+}
+function setCreditStatus(cls,text){
+  var el=document.getElementById('creditStatus'); el.className='key-status '+cls;
+  document.getElementById('creditStatusText').textContent=text;
+}
+async function verifyCredits(){
+  var email=document.getElementById('creditEmail').value.trim().toLowerCase();
+  if(!email){return;}
+  setCreditStatus('checking','Verifying with server...');
+  try{
+    var resp=await fetch(WORKER_URL+'/auth/verify',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email})
+    });
+    var data=await resp.json();
+    if(!resp.ok||data.error){
+      setCreditStatus('invalid',data.error||'No credits found for this email');
+      document.getElementById('creditSystemsGo').classList.remove('visible');
+      state.keyValidated=false;
+    } else {
+      setCreditStatus('valid','Credits verified — ready to go');
+      cfg.sessionToken=data.token;
+      cfg.creditsRemaining=data.credits;
+      cfg.provider='credits';
+      document.getElementById('creditCountDisplay').textContent=data.credits+' credit'+(data.credits!==1?'s':'')+' remaining';
+      document.getElementById('creditSystemsGo').classList.add('visible');
+      state.keyValidated=true;
+    }
+  }catch(e){
+    setCreditStatus('invalid','Server unreachable: '+e.message.substring(0,50));
+    state.keyValidated=false;
+    document.getElementById('creditSystemsGo').classList.remove('visible');
+  }
+  updateBeginBtn();
 }
 
 // ─── JD HANDLING ─────────────────────────────────────────────────────────────
@@ -1038,9 +1163,22 @@ async function submitAnswer(timerForced){
     scoreInstruction;
 
   var msgs=buildMessages(q,answer);
-  var prov=PROVIDERS[cfg.provider];
+  var prov=PROVIDERS[cfg.useCredits?'anthropic':cfg.provider];
   try{
-    var resp=await fetch(prov.url,{method:'POST',headers:prov.headers(cfg.apiKey),body:JSON.stringify(prov.body(sys,msgs))});
+    var resp;
+    if(cfg.useCredits){
+      // Route through Worker — key is server-side
+      resp=await fetch(WORKER_URL+'/api/chat',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Session-Token':cfg.sessionToken},
+        body:JSON.stringify(prov.body(sys,msgs))
+      });
+      // Update credits counter from response header
+      var rem=resp.headers.get('X-Credits-Remaining');
+      if(rem!==null){cfg.creditsRemaining=parseInt(rem);document.getElementById('creditCountDisplay').textContent=cfg.creditsRemaining+' credit'+(cfg.creditsRemaining!==1?'s':'')+' remaining';}
+    } else {
+      resp=await fetch(prov.url,{method:'POST',headers:prov.headers(cfg.apiKey),body:JSON.stringify(prov.body(sys,msgs))});
+    }
     var data=await resp.json();
     if(!resp.ok||data.error)throw new Error((data.error&&(data.error.message||data.error.error))||'HTTP '+resp.status);
     var raw=prov.extract(data)||'';
@@ -1250,13 +1388,13 @@ function showSummary(){
 
 function exitInterview(){
   if(confirm('Exit this session?')){
-    clearInterval(state.timerInterval); cfg.apiKey=''; state.keyValidated=false;
+    clearInterval(state.timerInterval); cfg.apiKey=''; cfg.sessionToken=''; state.keyValidated=false;
     document.getElementById('interviewScreen').style.display='none';
     document.getElementById('landingPage').style.display='flex';
   }
 }
 function restartApp(){
-  clearInterval(state.timerInterval); cfg.apiKey=''; state.keyValidated=false;
+  clearInterval(state.timerInterval); cfg.apiKey=''; cfg.sessionToken=''; state.keyValidated=false;
   document.getElementById('summaryScreen').style.display='none';
   document.getElementById('landingPage').style.display='flex';
   document.getElementById('apiKeyInput').value='';
