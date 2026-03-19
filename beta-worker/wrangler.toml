@@ -1,0 +1,22 @@
+name = "prepaired-beta"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# KV namespace for rate limiting + key rotation counter
+# Create with: npx wrangler kv:namespace create BETA_RATE
+[[kv_namespaces]]
+binding = "BETA_RATE"
+id = "REPLACE_WITH_BETA_RATE_KV_ID"
+preview_id = "REPLACE_WITH_BETA_RATE_KV_PREVIEW_ID"
+
+# Secrets — set via CLI, never commit:
+#   wrangler secret put HOUSE_GROQ_KEY_1    ← required (at least one)
+#   wrangler secret put HOUSE_GROQ_KEY_2    ← optional, for rotation
+#   wrangler secret put HOUSE_GROQ_KEY_3    ← optional
+#   wrangler secret put ALLOWED_ORIGIN      ← set to https://ijnebzor.github.io after deploy
+
+[env.production]
+name = "prepaired-beta"
+# Optional custom domain:
+# route = { pattern = "beta-api.prepaired.ijneb.dev/*", zone_name = "ijneb.dev" }
