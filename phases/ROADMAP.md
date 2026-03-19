@@ -1,69 +1,89 @@
-# PrepAIred — Roadmap
+# Roadmap
 
-> HireAId — get PrepAIred.
-
-This is a living document. Updated with each phase.
+PrepAIred is built in phases. Each phase is designed to stand alone — you can use Phase 1 without Phase 4 existing. Later phases build on earlier infrastructure.
 
 ---
 
-## ✅ Phase 1 — Personal Interview Simulator (current)
+## Phase 1 — Interview Simulator ✅
 
-Single HTML file, runs locally, uses your own Anthropic API key.
+*Shipped v0.1–v0.3.1*
 
-### Delivered
-- [x] Setup screen — personality, format, difficulty selection
-- [x] 5 interviewer personalities (Warm, Technical, Adversarial, HR/STAR, Curious)
-- [x] Interview formats — Panel (2–3 interviewers) and 1:1
-- [x] 3 difficulty modes — Relaxed, Realistic, Brutal
-- [x] Variable timer by question type and difficulty
-- [x] Live character counter with soft/hard limits
-- [x] Natural question progression with in-character sign-offs
-- [x] Do-over system — max 3 per question, score penalised per attempt
-- [x] 4-dimension scoring (Structure, Confidence, Technical Depth, Consulting Readiness)
-- [x] Session summary with aggregate scores and per-question verdicts
-- [x] Security hardened — rate limiting, input sanitisation, no key persistence
+The core loop. A working interview simulator with real time pressure, honest scoring, and an interviewer who pushes back.
 
-### Known limitations
-- No session persistence (refresh = lost progress)
-- Questions are hardcoded for Senior Consultant / Secure AI (CyberCX)
-- No skip question functionality
-- Requires local server (`python3 -m http.server`) to run
+**Delivered:**
+- 10-question bank (behavioural, governance, technical, scenario)
+- 5 interviewer personalities: Warm, Technical, Adversarial, HR/STAR, Curious
+- Panel (2–3 interviewers) and 1:1 formats
+- Variable timer by question type and difficulty (Easy / Real / Brutal)
+- 4-dimension scoring: Structure, Confidence, Technical Depth, Consulting Readiness
+- Coaching tip per question before you answer
+- Do-over system (max 3 per question, −0.5 score penalty per attempt)
+- Multi-provider: Anthropic Claude Haiku, OpenAI GPT-4o-mini, Groq Llama 3 (free)
+- Candidate profile: paste bio/resume or LinkedIn URL for personalised coaching
+- Session export to JSON (questions, scores, verdicts, transcripts)
+- Feedback loop: record real interview outcome for Phase 4 calibration
+- Live API key validation with Systems Go panel
+- Landing page
 
----
-
-## 🔨 Phase 2 — Anyone Can Use It
-
-Transform from personal tool to generalist interview simulator.
-
-### Planned
-- [ ] Role ingestion — paste a URL, JD text, PDF, or fill a form
-- [ ] AI-generated questions from the job description
-- [ ] Auto-detect role type, seniority, and key skills from JD
-- [ ] Company sentiment summary from public sources
-- [ ] Expected salary ranges by role, seniority, and location
-- [ ] Save/resume sessions (localStorage or exportable JSON)
-- [ ] Skip question functionality
-- [ ] Deployable to GitHub Pages (no local server needed)
+**Architecture:** Single HTML file, vanilla JS, no build process, no dependencies, browser-only execution.
 
 ---
 
-## 🎯 Phase 3 — Negotiation Simulator
+## Phase 2 — Anyone Can Use It 🔜
 
-Post-interview coaching and offer negotiation.
+*Target: Q2 2026*
 
-### Planned
-- [ ] Salary negotiation roleplay — offer → counter → response
-- [ ] Upper/lower bounds based on role, location, market data
-- [ ] Leverage your session performance score in negotiation
-- [ ] Coach mode — identifies your strongest interview moments to cite
-- [ ] "New business" vs "established team" framing guidance
-- [ ] Offer comparison tool — base vs total package vs growth trajectory
+Right now PrepAIred is hardcoded for a specific role. Phase 2 makes it work for any job, for anyone.
+
+**Planned:**
+- **JD ingestion** — paste a job URL, upload a PDF, or paste raw text. AI parses the role, extracts key competencies, and generates a tailored question bank.
+- **Dynamic question generation** — questions matched to the seniority, industry, and function of the role. Not just generic behavioural questions.
+- **Salary benchmarks** — surface market rate data for the role and location at setup time. Referenced in Phase 3.
+- **Company sentiment** — optional: surface recent news and Glassdoor signals for the employer. Helps calibrate how you should position yourself.
+
+**Technical dependencies:**
+- Web search integration for salary and company data
+- PDF parsing for JD upload
+- Structured output extraction from unstructured JD text
 
 ---
 
-## Tech philosophy
+## Phase 3 — Salary Negotiation 📋
 
-- No build step. No framework. No dependencies.
-- Runs in a browser. Single file where possible.
-- Your API key stays yours. Nothing phoned home.
-- Built in the open. Commits tell the story.
+*Target: Q3 2026*
+
+The interview goes well. They make an offer. Most people accept the first number. Phase 3 is the simulator for what happens next.
+
+**Planned:**
+- **Offer roleplay** — recruiter or hiring manager delivers an offer. You respond. AI plays the other side realistically.
+- **Counter coaching** — before each exchange, coach mode surfaces your strongest moments from the interview to use as leverage.
+- **Market bounds** — the simulator knows the salary data from Phase 2. The AI won't let you accept below market without flagging it.
+- **Escalation paths** — simulates common deflections: "that's the band maximum", "we can revisit after 6 months", "no flexibility on base but we can look at equity". You practice responding to each.
+
+---
+
+## Phase 4 — Career Intelligence 🧠
+
+*Target: Q4 2026*
+
+The feedback loop recorded since Phase 1 starts paying off.
+
+**Planned:**
+- **Outcome calibration** — anonymised outcomes (got it / rejected / progressed) correlated with scores and answer patterns. Over time, the scoring rubric adapts to what actually predicts success, not what just sounds good.
+- **Career diagnostic** — where are you relative to the roles you're targeting? Gap analysis across the 4 dimensions.
+- **Role pathway planner** — given your current profile and target role, what's the most direct path? What closes the gap fastest?
+- **Culture fit profiler** — based on how you answer and how interviewers respond, infer which culture types suit you vs. where you'll struggle.
+
+**Data model:**
+Phase 4 uses only data generated by PrepAIred itself. No external imports. The feedback loop from Phase 1 is the seed dataset. The more sessions you run and outcomes you record, the better the calibration gets.
+
+---
+
+## Not planned
+
+Things that would undermine the core design:
+
+- **Server-side processing** — PrepAIred stays client-only. Your data stays yours.
+- **Storing API keys server-side** — not happening. BYOK is non-negotiable.
+- **Social features or leaderboards** — this isn't a game. Your scores are for you.
+- **Score inflation** — the 1–10 scale stays honest. A 7 will always mean solid.
