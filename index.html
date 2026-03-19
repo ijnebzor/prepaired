@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- PrepAIred v0.4.2 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
+<!-- PrepAIred v0.5.0 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
 <meta name="description" content="PrepAIred — AI-powered interview simulator. Five personalities. Real time pressure. Honest scoring. Bring your own API key.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://api.groq.com https://api.openai.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.groq.com https://prepaired-api.ijnebzor.workers.dev https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
 <title>PrepAIred — HireAId</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Syne:wght@400;500;600;700;800&display=swap');
@@ -353,7 +353,7 @@ textarea:disabled{opacity:0.4;}
         <button class="btn-primary" onclick="openSetup()"><span>Start Interview</span><span>&rarr;</span></button>
         <button class="btn-ghost" onclick="window.open('https://github.com/ijnebzor/prepaired','_blank')">View on GitHub</button>
       </div>
-      <div class="hero-note">Supports Anthropic Claude &middot; OpenAI GPT-4o-mini &middot; Groq Llama 3 (free)</div>
+      <div class="hero-note">Free tier via Groq &mdash; no credit card &middot; or <a href="#" onclick="openSetup();return false;" style="color:var(--cyan);text-decoration:none;border-bottom:1px solid rgba(0,229,204,0.3);">buy credits</a> for Claude</div>
     </div>
   </section>
   <section class="features" id="features">
@@ -363,7 +363,7 @@ textarea:disabled{opacity:0.4;}
       <div class="feature-card"><div class="feature-icon">&#127917;</div><div class="feature-title">5 Interviewer Personalities</div><div class="feature-desc">Warm, Technical, Adversarial, HR/STAR, Curious. Each has a distinct voice, follow-up style, and tolerance for vague answers. Panel mode splits the question across multiple voices.</div><span class="feature-tag" style="background:rgba(249,115,22,0.08);color:var(--orange)">Panel &middot; 1:1</span></div>
       <div class="feature-card"><div class="feature-icon">&#129504;</div><div class="feature-title">2 Follow-up Questions</div><div class="feature-desc">Each question runs a full 3-turn exchange: your answer, a follow-up that probes what you glossed over, then a final challenge. The score covers the whole conversation, not just the opener.</div><span class="feature-tag" style="background:rgba(167,139,250,0.08);color:var(--purple)">Deep probe</span></div>
       <div class="feature-card"><div class="feature-icon">&#128202;</div><div class="feature-title">Consistent 4D Scoring</div><div class="feature-desc">Structure. Confidence. Technical Depth. Role Readiness. Every question scored identically. A 7 means solid. A 9 means exceptional. Not inflated.</div><span class="feature-tag" style="background:rgba(34,197,94,0.08);color:var(--green)">Session Summary</span></div>
-      <div class="feature-card"><div class="feature-icon">&#128273;</div><div class="feature-title">Your Key. Your Data.</div><div class="feature-desc">Anthropic, OpenAI, or Groq (free tier). Nothing stored. Nothing sent anywhere except the AI API. Key cleared from memory on exit.</div><span class="feature-tag" style="background:rgba(234,179,8,0.08);color:var(--yellow)">Security First</span></div>
+      <div class="feature-card"><div class="feature-icon">&#128273;</div><div class="feature-title">Your Key. Your Data.</div><div class="feature-desc">Groq free tier or buy a credit pack for Claude. Nothing stored. API calls go directly from your browser to Groq, or via our Worker for credits. Key cleared on exit.</div><span class="feature-tag" style="background:rgba(234,179,8,0.08);color:var(--yellow)">Security First</span></div>
       <div class="feature-card"><div class="feature-icon">&#128260;</div><div class="feature-title">The Feedback Loop</div><div class="feature-desc">After the real interview &mdash; did you get the job? Your outcome (anonymised) helps calibrate what answers actually correlate with getting hired.</div><span class="feature-tag" style="background:rgba(0,229,204,0.08);color:var(--cyan)">Phase 4 Intelligence</span></div>
     </div>
   </section>
@@ -425,30 +425,27 @@ textarea:disabled{opacity:0.4;}
     <div class="setup-section">
       <div class="setup-label">How do you want to run this?</div>
       <div class="mode-tabs">
-        <button class="mode-tab active" data-mode="byok" onclick="selectMode(this)">My API Key</button>
-        <button class="mode-tab credits-tab" data-mode="credits" onclick="selectMode(this)">&#11088; Use Credits</button>
+        <button class="mode-tab active" data-mode="byok" onclick="selectMode(this)">Free (Groq)</button>
+        <button class="mode-tab credits-tab" data-mode="credits" onclick="selectMode(this)">&#11088; Credits &mdash; use Claude</button>
       </div>
 
-      <!-- BYOK pane -->
+      <!-- BYOK pane — Groq only (free) -->
       <div class="mode-pane active" id="pane-byok">
-        <div class="provider-tabs">
-          <button class="provider-tab active" data-provider="anthropic" onclick="selectProvider(this)">Anthropic</button>
-          <button class="provider-tab" data-provider="openai" onclick="selectProvider(this)">OpenAI</button>
-          <button class="provider-tab free-tag" data-provider="groq" onclick="selectProvider(this)">Groq</button>
+        <div style="padding:12px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.6;">
+          <strong style="color:var(--green)">Free.</strong> Groq runs Llama 3.1 at speed with no credit card required.
+          Get a free key at <a href="https://console.groq.com" target="_blank" style="color:var(--cyan);">console.groq.com</a> &mdash; takes 60 seconds.
+          <span style="display:block;margin-top:6px;color:var(--text-dim);">Want Claude? Use the <button onclick="document.querySelector('[data-mode=credits]').click()" style="background:none;border:none;color:var(--yellow);cursor:pointer;font-family:var(--mono);font-size:11px;padding:0;text-decoration:underline;">Credits tab</button> &rarr;</span>
         </div>
-        <div class="provider-info visible" id="info-anthropic">Best quality. Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> &mdash; ~$0.02/session.</div>
-        <div class="provider-info" id="info-openai">GPT-4o-mini. Get a key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> &mdash; ~$0.03/session.</div>
-        <div class="provider-info" id="info-groq"><strong style="color:var(--green)">Free tier available.</strong> Llama 3 at speed. Get a key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> &mdash; no credit card needed.</div>
         <div class="api-input-wrap">
-          <input type="password" class="api-input" id="apiKeyInput" placeholder="Paste your API key..." oninput="onKeyInput()" />
+          <input type="password" class="api-input" id="apiKeyInput" placeholder="gsk_..." oninput="onKeyInput()" />
           <div class="api-input-actions"><button class="toggle-vis" onclick="toggleKeyVis()" title="Show/hide key">&#128065;</button></div>
         </div>
-        <div class="key-status idle" id="keyStatus"><div class="key-status-dot"></div><span id="keyStatusText">Paste your API key to validate</span></div>
+        <div class="key-status idle" id="keyStatus"><div class="key-status-dot"></div><span id="keyStatusText">Paste your Groq key to validate</span></div>
         <div class="systems-go" id="systemsGo">
           <div class="sg-title">&#10003; Systems go</div>
-          <div class="sg-row"><span class="sg-check">&#10003;</span><span>API key validated</span></div>
-          <div class="sg-row"><span class="sg-check">&#10003;</span><span id="sgProvider">Provider ready</span></div>
-          <div class="sg-row"><span class="sg-check">&#10003;</span><span>Running in-browser &mdash; nothing stored server-side</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>Groq key validated</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span id="sgProvider">Groq Llama 3.1 connected</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>Running in-browser &mdash; key never leaves your device</span></div>
         </div>
       </div>
 
@@ -727,12 +724,13 @@ var PROVIDERS={
 
 var CHAR_LIMIT=600, MAX_DOOVER=3, MAX_TURNS=3;
 
-// ─── WORKER CONFIG ────────────────────────────────────────────────────────────
+// ─── WORKER CONFIG ──────────────────────────────────────────────────────────────
+// BYOK = Groq only (free). Credits path uses Claude Haiku 4.5 via Worker.
 // Update this after deploying the Cloudflare Worker
 var WORKER_URL = 'https://prepaired-api.ijnebzor.workers.dev'; // 3 turns = initial answer + 2 follow-ups
 
 var cfg={
-  apiKey:'', provider:'anthropic', personality:'adversarial',
+  apiKey:'', provider:'groq', personality:'adversarial',
   format:'panel', difficulty:'realistic',
   profile:'', jd:'', jdSource:'none',
   useCredits:false, sessionToken:'', creditsRemaining:0
@@ -769,16 +767,12 @@ function openSetup(){document.getElementById('setupModal').classList.add('open')
 function closeSetup(){document.getElementById('setupModal').classList.remove('open');document.body.style.overflow='';}
 
 function selectProvider(el){
-  document.querySelectorAll('.provider-tab').forEach(function(t){t.classList.remove('active');});
-  el.classList.add('active'); cfg.provider=el.dataset.provider;
-  document.querySelectorAll('.provider-info').forEach(function(i){i.classList.remove('visible');});
-  var info=document.getElementById('info-'+cfg.provider); if(info)info.classList.add('visible');
-  var ph={anthropic:'sk-ant-...',openai:'sk-...',groq:'gsk_...'};
-  document.getElementById('apiKeyInput').placeholder=ph[cfg.provider]||'API key...';
+  // BYOK is Groq-only — this function kept for compatibility but provider is always groq
+  cfg.provider='groq';
+  document.getElementById('apiKeyInput').placeholder='gsk_...';
   var key=document.getElementById('apiKeyInput').value.trim();
   if(key.length>10)scheduleKeyCheck();
-  var provLabels={anthropic:'Anthropic Claude Haiku',openai:'OpenAI GPT-4o-mini',groq:'Groq Llama 3 (free tier)'};
-  document.getElementById('sgProvider').textContent=(provLabels[cfg.provider]||cfg.provider)+' connected';
+  document.getElementById('sgProvider').textContent='Groq Llama 3.1 connected';
 }
 function toggleKeyVis(){var i=document.getElementById('apiKeyInput');i.type=i.type==='password'?'text':'password';}
 
@@ -801,8 +795,8 @@ function setKeyStatus(cls,text){
 async function validateKey(){
   var key=document.getElementById('apiKeyInput').value.trim();
   if(!key){setKeyStatus('idle','Paste your API key to validate');return;}
-  setKeyStatus('checking','Validating with '+cfg.provider+'...');
-  var prov=PROVIDERS[cfg.provider];
+  setKeyStatus('checking','Validating Groq key...');
+  var prov=PROVIDERS['groq'];
   try{
     var resp=await fetch(prov.url,{method:'POST',headers:prov.headers(key),body:JSON.stringify(prov.body('Reply with one word: OK',[{role:'user',content:'ping'}]))});
     var data=await resp.json();
@@ -813,8 +807,7 @@ async function validateKey(){
     } else {
       setKeyStatus('valid','Key valid — ready to go');
       state.keyValidated=true; cfg.apiKey=key;
-      var provLabels={anthropic:'Anthropic Claude Haiku',openai:'OpenAI GPT-4o-mini',groq:'Groq Llama 3 (free tier)'};
-      document.getElementById('sgProvider').textContent=(provLabels[cfg.provider]||cfg.provider)+' connected';
+      document.getElementById('sgProvider').textContent='Groq Llama 3.1 connected';
       document.getElementById('systemsGo').classList.add('visible');
     }
   }catch(e){
@@ -888,6 +881,7 @@ async function verifyOtp(){
       cfg.sessionToken=data.token; cfg.creditsRemaining=data.credits; cfg.provider='credits';
       document.getElementById('creditStep2').style.display='none';
       document.getElementById('creditSystemsGo').classList.add('visible');
+      document.getElementById('sgProvider').textContent='Claude Haiku 4.5 connected';
       document.getElementById('creditCountDisplay').textContent=data.credits+' credit'+(data.credits!==1?'s':'')+' remaining';
       state.keyValidated=true; updateBeginBtn();
     }
@@ -1377,7 +1371,7 @@ function showSummary(){
   document.getElementById('interviewScreen').style.display='none';
   document.getElementById('summaryScreen').style.display='block';
   var p=PERSONALITIES[cfg.personality];
-  var provLabels={anthropic:'Claude Haiku',openai:'GPT-4o-mini',groq:'Llama 3 (Groq)'};
+  var provLabels={groq:'Llama 3.1 (Groq)',credits:'Claude Haiku 4.5'};
   document.getElementById('summaryMeta').textContent=
     p.label+' \u00b7 '+(cfg.format==='panel'?'Panel':'1:1')+' \u00b7 '+cfg.difficulty+' \u00b7 '+
     (provLabels[cfg.provider]||cfg.provider)+(cfg.jd?' \u00b7 JD loaded':'');
