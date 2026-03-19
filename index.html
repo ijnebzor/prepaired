@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- PrepAIred v0.5.0 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
+<!-- PrepAIred v0.5.0-beta | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
 <meta name="description" content="PrepAIred — AI-powered interview simulator. Five personalities. Real time pressure. Honest scoring. Bring your own API key.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.groq.com https://prepaired-api.ijnebzor.workers.dev https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://prepaired-beta.ijnebzor.workers.dev https://prepaired-api.ijnebzor.workers.dev https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
 <title>PrepAIred — HireAId</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Syne:wght@400;500;600;700;800&display=swap');
@@ -328,7 +328,7 @@ textarea:disabled{opacity:0.4;}
 <!-- LANDING -->
 <div id="landingPage">
   <nav id="mainNav">
-    <div class="nav-brand">Prep<span>AI</span>red</div>
+    <div class="nav-brand">Prep<span>AI</span>red <span style="font-size:10px;color:var(--yellow);font-family:var(--mono);letter-spacing:0.1em;vertical-align:middle;">BETA</span></div>
     <ul class="nav-links">
       <li><a href="#features">Features</a></li>
       <li><a href="#phases">Roadmap</a></li>
@@ -353,7 +353,7 @@ textarea:disabled{opacity:0.4;}
         <button class="btn-primary" onclick="openSetup()"><span>Start Interview</span><span>&rarr;</span></button>
         <button class="btn-ghost" onclick="window.open('https://github.com/ijnebzor/prepaired','_blank')">View on GitHub</button>
       </div>
-      <div class="hero-note">Free tier via Groq &mdash; no credit card &middot; or <a href="#" onclick="openSetup();return false;" style="color:var(--cyan);text-decoration:none;border-bottom:1px solid rgba(0,229,204,0.3);">buy credits</a> for Claude</div>
+      <div class="hero-note"><span style="color:var(--yellow);">&#9679; Beta</span> &mdash; Free tier, no setup &middot; or <a href="#" onclick="openSetup();return false;" style="color:var(--cyan);text-decoration:none;border-bottom:1px solid rgba(0,229,204,0.3);">buy credits</a> for Claude Haiku 4.5</div>
     </div>
   </section>
   <section class="features" id="features">
@@ -425,27 +425,32 @@ textarea:disabled{opacity:0.4;}
     <div class="setup-section">
       <div class="setup-label">How do you want to run this?</div>
       <div class="mode-tabs">
-        <button class="mode-tab active" data-mode="byok" onclick="selectMode(this)">Free (Groq)</button>
+        <button class="mode-tab active" data-mode="byok" onclick="selectMode(this)">Free tier</button>
         <button class="mode-tab credits-tab" data-mode="credits" onclick="selectMode(this)">&#11088; Credits &mdash; use Claude</button>
       </div>
 
-      <!-- BYOK pane — Groq only (free) -->
+      <!-- Free tier — house keys, no user input required -->
       <div class="mode-pane active" id="pane-byok">
-        <div style="padding:12px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.6;">
-          <strong style="color:var(--green)">Free.</strong> Groq runs Llama 3.1 at speed with no credit card required.
-          Get a free key at <a href="https://console.groq.com" target="_blank" style="color:var(--cyan);">console.groq.com</a> &mdash; takes 60 seconds.
-          <span style="display:block;margin-top:6px;color:var(--text-dim);">Want Claude? Use the <button onclick="document.querySelector('[data-mode=credits]').click()" style="background:none;border:none;color:var(--yellow);cursor:pointer;font-family:var(--mono);font-size:11px;padding:0;text-decoration:underline;">Credits tab</button> &rarr;</span>
+        <div style="padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.7;">
+          <div style="color:var(--green);font-weight:700;margin-bottom:6px;">&#10003; No setup required</div>
+          Runs on shared infrastructure using free-tier AI models. No account, no key, no credit card.
+          <div style="margin-top:10px;padding:10px 12px;background:rgba(234,179,8,0.06);border:1px solid rgba(234,179,8,0.2);border-radius:5px;color:var(--yellow);">
+            <strong style="color:var(--yellow);">Beta limitations</strong><br>
+            Free tier models are lower quality than Claude and may time out or switch mid-interview during high-traffic periods, which can disrupt your session.
+            For a consistent, high-quality experience use <button onclick="document.querySelector('[data-mode=credits]').click()" style="background:none;border:none;color:var(--cyan);cursor:pointer;font-family:var(--mono);font-size:11px;padding:0;text-decoration:underline;">Credits &rarr;</button>
+          </div>
         </div>
-        <div class="api-input-wrap">
-          <input type="password" class="api-input" id="apiKeyInput" placeholder="gsk_..." oninput="onKeyInput()" />
-          <div class="api-input-actions"><button class="toggle-vis" onclick="toggleKeyVis()" title="Show/hide key">&#128065;</button></div>
+        <!-- Hidden inputs kept for JS compatibility — not shown to user -->
+        <input type="hidden" id="apiKeyInput" value="__house__" />
+        <div class="key-status valid" id="keyStatus" style="margin-top:0;">
+          <div class="key-status-dot"></div>
+          <span id="keyStatusText">Free tier ready &mdash; no key needed</span>
         </div>
-        <div class="key-status idle" id="keyStatus"><div class="key-status-dot"></div><span id="keyStatusText">Paste your Groq key to validate</span></div>
-        <div class="systems-go" id="systemsGo">
-          <div class="sg-title">&#10003; Systems go</div>
-          <div class="sg-row"><span class="sg-check">&#10003;</span><span>Groq key validated</span></div>
-          <div class="sg-row"><span class="sg-check">&#10003;</span><span id="sgProvider">Groq Llama 3.1 connected</span></div>
-          <div class="sg-row"><span class="sg-check">&#10003;</span><span>Running in-browser &mdash; key never leaves your device</span></div>
+        <div class="systems-go visible" id="systemsGo" style="margin-top:0;">
+          <div class="sg-title">&#10003; Ready</div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>Shared free tier &mdash; Groq Llama 3.1</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span id="sgProvider">House keys active</span></div>
+          <div class="sg-row"><span class="sg-check">&#10003;</span><span>For best results, upgrade to Credits</span></div>
         </div>
       </div>
 
@@ -733,7 +738,7 @@ var cfg={
   apiKey:'', provider:'groq', personality:'adversarial',
   format:'panel', difficulty:'realistic',
   profile:'', jd:'', jdSource:'none',
-  useCredits:false, sessionToken:'', creditsRemaining:0
+  useCredits:false, useFreeHouse:true, sessionToken:'', creditsRemaining:0
 };
 
 var state={
@@ -763,7 +768,16 @@ window.addEventListener('scroll',function(){
 });
 
 // ─── SETUP MODAL ─────────────────────────────────────────────────────────────
-function openSetup(){document.getElementById('setupModal').classList.add('open');document.body.style.overflow='hidden';}
+function openSetup(){
+  document.getElementById('setupModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  // Free tier is default — pre-validate immediately
+  if(!cfg.useCredits){
+    cfg.useFreeHouse=true;
+    state.keyValidated=true;
+    updateBeginBtn();
+  }
+}
 function closeSetup(){document.getElementById('setupModal').classList.remove('open');document.body.style.overflow='';}
 
 function selectProvider(el){
@@ -777,9 +791,10 @@ function selectProvider(el){
 function toggleKeyVis(){var i=document.getElementById('apiKeyInput');i.type=i.type==='password'?'text':'password';}
 
 function onKeyInput(){
+  if(cfg.useFreeHouse)return; // house key mode — input is hidden, ignore
   state.keyValidated=false; updateBeginBtn();
   var key=document.getElementById('apiKeyInput').value.trim();
-  if(!key){setKeyStatus('idle','Paste your API key to validate');document.getElementById('systemsGo').classList.remove('visible');return;}
+  if(!key){setKeyStatus('idle','Paste your Groq key to validate');document.getElementById('systemsGo').classList.remove('visible');return;}
   setKeyStatus('checking','Checking key...');
   clearTimeout(keyCheckTimer); keyCheckTimer=setTimeout(validateKey,800);
 }
@@ -835,7 +850,15 @@ function selectMode(el){
   document.querySelectorAll('.mode-pane').forEach(function(p){p.classList.remove('active');});
   var pane=document.getElementById('pane-'+mode); if(pane)pane.classList.add('active');
   cfg.useCredits=(mode==='credits');
-  state.keyValidated=false; updateBeginBtn();
+  if(mode==='byok'){
+    // Free tier — house keys, always ready
+    cfg.useFreeHouse=true;
+    state.keyValidated=true;
+  } else {
+    cfg.useFreeHouse=false;
+    state.keyValidated=false;
+  }
+  updateBeginBtn();
 }
 
 function setStatus(elId, textElId, cls, text){
@@ -967,7 +990,7 @@ function selectDiff(el){
 
 // ─── BEGIN INTERVIEW ──────────────────────────────────────────────────────────
 function beginInterview(){
-  if(!state.keyValidated){
+  if(!state.keyValidated&&!cfg.useFreeHouse){
     setKeyStatus('checking','Validating...');
     validateKey().then(function(){if(state.keyValidated)beginInterview();});
     return;
@@ -1188,19 +1211,25 @@ async function submitAnswer(timerForced){
     scoreInstruction;
 
   var msgs=buildMessages(q,answer);
-  var prov=PROVIDERS[cfg.useCredits?'anthropic':cfg.provider];
+  var prov=PROVIDERS['groq']; // groq shape used for all paths (Worker normalises)
   try{
     var resp;
     if(cfg.useCredits){
-      // Route through Worker — key is server-side
+      // Paid credits — Claude Haiku 4.5 via paid Worker
       resp=await fetch(WORKER_URL+'/api/chat',{
         method:'POST',
         headers:{'Content-Type':'application/json','X-Session-Token':cfg.sessionToken},
-        body:JSON.stringify(prov.body(sys,msgs))
+        body:JSON.stringify(PROVIDERS['anthropic'].body(sys,msgs))
       });
-      // Update credits counter from response header
       var rem=resp.headers.get('X-Credits-Remaining');
       if(rem!==null){cfg.creditsRemaining=parseInt(rem);document.getElementById('creditCountDisplay').textContent=cfg.creditsRemaining+' credit'+(cfg.creditsRemaining!==1?'s':'')+' remaining';}
+    } else if(cfg.useFreeHouse){
+      // Free tier — house Groq keys via beta Worker, no auth required
+      resp=await fetch(BETA_WORKER_URL+'/api/free',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({system:sys,messages:msgs})
+      });
     } else {
       resp=await fetch(prov.url,{method:'POST',headers:prov.headers(cfg.apiKey),body:JSON.stringify(prov.body(sys,msgs))});
     }
@@ -1371,7 +1400,7 @@ function showSummary(){
   document.getElementById('interviewScreen').style.display='none';
   document.getElementById('summaryScreen').style.display='block';
   var p=PERSONALITIES[cfg.personality];
-  var provLabels={groq:'Llama 3.1 (Groq)',credits:'Claude Haiku 4.5'};
+  var provLabels={groq:'Llama 3.1 free tier',credits:'Claude Haiku 4.5'};
   document.getElementById('summaryMeta').textContent=
     p.label+' \u00b7 '+(cfg.format==='panel'?'Panel':'1:1')+' \u00b7 '+cfg.difficulty+' \u00b7 '+
     (provLabels[cfg.provider]||cfg.provider)+(cfg.jd?' \u00b7 JD loaded':'');
