@@ -1828,18 +1828,32 @@ function doOver(){
 
 // ─── EXPORT ───────────────────────────────────────────────────────────────────
 function exportSession(){
-  var session={version:'PrepAIred-v0.4.0',exported:new Date().toISOString(),sessionStart:state.sessionStart,
-    config:{personality:cfg.personality,format:cfg.format,difficulty:cfg.difficulty,provider:cfg.provider,jdSource:cfg.jdSource},
-    questions:[]};
-  for(var i=0;i<QUESTIONS.length;i++){
-    var q=QUESTIONS[i]; var transcript=[];
-    var h=state.histories[q.id]||[];
-    for(var j=0;j<h.length;j++){if(h[j].role==='you')transcript.push(h[j]);}
-    session.questions.push({id:q.id,tag:q.tag,text:q.text,score:state.scores[q.id]||null,attempts:state.attempts[q.id]||0,turns:state.turnNum[q.id]||1,transcript:transcript});
+  var session={version:'PrepAIred-v2.0.0',exported:new Date().toISOString(),sessionStart:state.sessionStart,
+    mode:cfg.product,
+    config:{personality:cfg.personality,format:cfg.format,difficulty:cfg.difficulty,provider:cfg.provider,jdSource:cfg.jdSource}};
+
+  if(cfg.product==='salary'||cfg.product==='promotion'){
+    // Negotiation export
+    session.negotiation={
+      type:cfg.product,
+      managerStyle:cfg.product==='promotion'?cfg.managerStyle:undefined,
+      turns:state.negotiationTurn,
+      score:state.negotiationScore||null,
+      transcript:state.negotiationHistory.filter(function(m){return m.role==='you';}).map(function(m){return m.content;})
+    };
+  } else {
+    // Interview export
+    session.questions=[];
+    for(var i=0;i<QUESTIONS.length;i++){
+      var q=QUESTIONS[i]; var transcript=[];
+      var h=state.histories[q.id]||[];
+      for(var j=0;j<h.length;j++){if(h[j].role==='you')transcript.push(h[j]);}
+      session.questions.push({id:q.id,tag:q.tag,text:q.text,score:state.scores[q.id]||null,attempts:state.attempts[q.id]||0,turns:state.turnNum[q.id]||1,transcript:transcript});
+    }
   }
   var blob=new Blob([JSON.stringify(session,null,2)],{type:'application/json'});
   var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='prepaired-'+new Date().toISOString().split('T')[0]+'.json';
+  a.download='prepaired-'+cfg.product+'-'+new Date().toISOString().split('T')[0]+'.json';
   a.click(); URL.revokeObjectURL(a.href);
 }
 
