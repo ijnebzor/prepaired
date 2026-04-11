@@ -537,10 +537,19 @@ textarea:disabled{opacity:0.4;}
       <div class="profile-tabs">
         <button class="profile-tab active" data-panel="skip" onclick="selectProfileTab(this)">Skip</button>
         <button class="profile-tab" data-panel="paste" onclick="selectProfileTab(this)">Paste Bio / Resume</button>
+        <button class="profile-tab" data-panel="upload" onclick="selectProfileTab(this)">Upload PDF</button>
         <button class="profile-tab" data-panel="url" onclick="selectProfileTab(this)">LinkedIn / URL</button>
       </div>
       <div class="profile-panel active" id="panel-skip"><div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);padding:6px 0;">Add your profile for coaching that references your actual experience.</div></div>
       <div class="profile-panel" id="panel-paste"><textarea class="setup-textarea" id="profileText" placeholder="Paste your LinkedIn summary, resume highlights, or bio..."></textarea></div>
+      <div class="profile-panel" id="panel-upload">
+        <div class="jd-drop" id="profileDrop" onclick="document.getElementById('profileFile').click()" ondragover="profileDragOver(event)" ondrop="profileDrop(event)">
+          <div class="jd-drop-label">Drop a resume PDF or LinkedIn export here, or <span>browse</span></div>
+          <input type="file" id="profileFile" accept=".pdf,.txt,.doc,.docx" onchange="profileFileSelected(event)">
+        </div>
+        <div class="jd-status" id="profileFileStatus"></div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);padding:4px 0;">Tip: Export your LinkedIn profile as PDF from linkedin.com/in/yourname → More → Save to PDF</div>
+      </div>
       <div class="profile-panel" id="panel-url"><input type="text" class="setup-input" id="profileUrl" placeholder="https://linkedin.com/in/yourname" /></div>
     </div>
 
@@ -947,6 +956,41 @@ function readJdFile(file){
   }
 }
 
+// ─── PROFILE FILE UPLOAD ─────────────────────────────────────────────────────
+function profileDragOver(e){e.preventDefault();document.getElementById('profileDrop').classList.add('drag-over');}
+function profileDrop(e){
+  e.preventDefault();document.getElementById('profileDrop').classList.remove('drag-over');
+  var file=e.dataTransfer.files[0];if(file)readProfileFile(file);
+}
+function profileFileSelected(e){var file=e.target.files[0];if(file)readProfileFile(file);}
+function readProfileFile(file){
+  var st=document.getElementById('profileFileStatus');
+  st.textContent='Reading '+file.name+'...';st.classList.add('visible');
+  if(file.type==='application/pdf'||file.name.endsWith('.pdf')){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var arr=new Uint8Array(e.target.result);
+      var text='';
+      for(var i=0;i<arr.length-1;i++){
+        var c=arr[i];
+        if(c>=32&&c<127)text+=String.fromCharCode(c);
+        else if(c===10||c===13)text+='\n';
+      }
+      var lines=text.split('\n').filter(function(l){return l.trim().length>10&&/[a-zA-Z]{3}/.test(l);});
+      cfg.profile=lines.join('\n').substring(0,2000);
+      st.textContent='Loaded: '+file.name+' ('+Math.round(cfg.profile.length/100)/10+'k chars extracted)';
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    var reader2=new FileReader();
+    reader2.onload=function(e){
+      cfg.profile=e.target.result.substring(0,2000);
+      st.textContent='Loaded: '+file.name;
+    };
+    reader2.readAsText(file);
+  }
+}
+
 function selectProfileTab(el){
   document.querySelectorAll('.profile-tab').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
@@ -1037,6 +1081,7 @@ async function beginInterview(){
   var panel=activePanel?activePanel.dataset.panel:'skip';
   if(panel==='paste'){var pt=document.getElementById('profileText');cfg.profile=pt?pt.value.trim():'';}
   else if(panel==='url'){var pu=document.getElementById('profileUrl');cfg.profile=pu?pu.value.trim():'';}
+  else if(panel==='upload'){/* cfg.profile already set via readProfileFile() */}
   else cfg.profile='';
 
   // Reset state
