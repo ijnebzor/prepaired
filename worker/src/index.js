@@ -35,9 +35,6 @@
 const ALLOWED_ORIGINS = [
   'https://ijnebzor.github.io',
   'https://prepaired.ijneb.dev',
-  'http://localhost:8080',
-  'http://localhost:3000',
-  'http://127.0.0.1:8080',
 ];
 
 function getCorsHeaders(request) {
@@ -267,8 +264,9 @@ async function handleChatProxy(request, env) {
   if (!record || record.credits < 1)
     return json({ error: 'No credits remaining.', credits: 0, hint: 'Purchase more at prepaired.ijneb.dev' }, 402);
 
-  // Rate limit: max 50 API calls per session (10 questions × 3 turns + question generation + buffer)
-  const rateLimitKey = `ratelimit:${session.email}`;
+  // Rate limit: max 50 API calls per session token (10 questions × 3 turns + question generation + buffer)
+  const token = request.headers.get('X-Session-Token');
+  const rateLimitKey = `ratelimit:${token}`;
   const callCount = await getKV(env.CREDITS, rateLimitKey) || { count: 0 };
   if (callCount.count >= 50)
     return json({ error: 'Session call limit reached. Complete the interview to continue.' }, 429);
