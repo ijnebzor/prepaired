@@ -9,8 +9,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [[kv_namespaces]]
 binding = "CREDITS"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
-preview_id = "REPLACE_WITH_YOUR_KV_NAMESPACE_PREVIEW_ID"
+id = "124d3348136b48baa52ae2f44c366b90"
 
 # Secrets — set via CLI, never commit to git:
 #   wrangler secret put ANTHROPIC_API_KEY

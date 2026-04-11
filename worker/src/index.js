@@ -1,5 +1,15 @@
 /**
- * PrepAIred API Worker — v1.1.0
+ * PrepAIred API Worker — v2.0.0
+ *
+ * v2.0 changes:
+ *  - Credit deduction moved to /api/session-complete (deduct after summary, not per call)
+ *  - Whop product ID mapping (prod_fAllgfdh0AYLB, prod_lc38j2naUxDzF, prod_R6F1l9UT0jau3)
+ *  - CORS restricted to known origins (no more wildcard)
+ *  - Chat proxy body allowlisted (system, messages, model, max_tokens only)
+ *  - Admin auth uses timing-safe comparison
+ *  - Token validation verifies HMAC signature before KV lookup
+ *  - Per-session rate limiting on chat proxy (max 50 calls/hour)
+ *  - Error messages no longer leak internal details
  *
  * Changes from v1.0:
  *  - Email OTP verification (6-digit code, 10-minute expiry)
@@ -22,25 +32,40 @@
  *   ADMIN_SECRET         strong random string for admin endpoints
  */
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Session-Token, X-Admin-Secret',
-};
+const ALLOWED_ORIGINS = [
+  'https://ijnebzor.github.io',
+  'https://prepaired.ijneb.dev',
+  'http://localhost:8080',
+  'http://localhost:3000',
+  'http://127.0.0.1:8080',
+];
 
-const CREDITS_PER_CALL   = 1;
+function getCorsHeaders(request) {
+  const origin = request.headers.get('Origin') || '';
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Session-Token, X-Admin-Secret',
+    'Vary': 'Origin',
+  };
+}
+
 const PAID_MODEL         = 'claude-haiku-4-5-20251001';
 const OTP_EXPIRY_SECONDS = 600;
 const OTP_MAX_ATTEMPTS   = 5;
 const SESSION_TTL        = 86400;
 
+let _cors = {};
+
 export default {
   async fetch(request, env) {
-    if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
+    _cors = getCorsHeaders(request);
+    if (request.method === 'OPTIONS') return new Response(null, { headers: _cors });
     const url = new URL(request.url);
 
     if (url.pathname === '/health')
-      return json({ status: 'ok', version: '1.1.0' });
+      return json({ status: 'ok', version: '2.0.0' });
     if (url.pathname === '/webhook/whop' && request.method === 'POST')
       return handleWhopWebhook(request, env);
     if (url.pathname === '/auth/request-otp' && request.method === 'POST')
@@ -51,6 +76,8 @@ export default {
       return handleCreditsCheck(request, env);
     if (url.pathname === '/api/chat' && request.method === 'POST')
       return handleChatProxy(request, env);
+    if (url.pathname === '/api/session-complete' && request.method === 'POST')
+      return handleSessionComplete(request, env);
     if (url.pathname === '/admin/gift' && request.method === 'POST')
       return handleAdminGift(request, env);
     if (url.pathname === '/admin/credits' && request.method === 'GET')
@@ -82,7 +109,7 @@ async function handleRequestOtp(request, env) {
   }), { expirationTtl: OTP_EXPIRY_SECONDS });
 
   const sent = await sendOtpEmail(email, code, record.credits, env);
-  if (!sent.ok) return json({ error: 'Failed to send email: ' + sent.error }, 502);
+  if (!sent.ok) return json({ error: 'Failed to send verification email. Please try again.' }, 502);
 
   return json({ ok: true, message: `Code sent to ${email}. Valid for 10 minutes.` });
 }
@@ -143,7 +170,7 @@ async function sendOtpEmail(email, code, credits, env) {
 // body: { emails: ["a@b.com", "c@d.com"], credits: 5, note: "beta" }
 // or:   { email: "a@b.com", credits: 3, note: "comp" }
 async function handleAdminGift(request, env) {
-  if (!checkAdmin(request, env)) return json({ error: 'Unauthorized' }, 401);
+  if (!await checkAdmin(request, env)) return json({ error: 'Unauthorized' }, 401);
   let body;
   try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400); }
 
@@ -172,7 +199,7 @@ async function handleAdminGift(request, env) {
 // ── ADMIN: CREDITS LOOKUP ─────────────────────────────────────────────────────
 // GET /admin/credits?email=user@example.com  headers: X-Admin-Secret: YOUR_SECRET
 async function handleAdminCreditsLookup(request, env) {
-  if (!checkAdmin(request, env)) return json({ error: 'Unauthorized' }, 401);
+  if (!await checkAdmin(request, env)) return json({ error: 'Unauthorized' }, 401);
   const url = new URL(request.url);
   const email = norm(url.searchParams.get('email') || '');
   if (!email) return json({ error: 'email param required' }, 400);
@@ -206,7 +233,15 @@ async function handleWhopWebhook(request, env) {
 }
 
 function resolveCredits(planId, qty) {
+  const PRODUCT_MAP = {
+    'prod_fallgfdh0aylb': 1,   // $2  — 1 interview
+    'prod_lc38j2nauxdzf': 5,   // $5  — 5 interviews
+    'prod_r6f1l9ut0jau3': 15,  // $10 — 15 interviews
+  };
   const id = String(planId).toLowerCase();
+  const mapped = PRODUCT_MAP[id];
+  if (mapped) return mapped * qty;
+  // Fallback for legacy or unknown product IDs
   if (id.includes('fifteen')||id.includes('15')) return 15*qty;
   if (id.includes('five')||id.includes('5pack')) return 5*qty;
   return 1*qty;
@@ -221,19 +256,35 @@ async function handleCreditsCheck(request, env) {
 }
 
 // ── CHAT PROXY ────────────────────────────────────────────────────────────────
+// No per-call credit deduction. Credits are deducted via /api/session-complete
+// after the interview summary is shown.
 async function handleChatProxy(request, env) {
   const session = await validateToken(request.headers.get('X-Session-Token'), env);
   if (!session) return json({ error: 'Invalid or expired session. Re-verify your email.' }, 401);
 
   const key = `credits:${session.email}`;
   const record = await getKV(env.CREDITS, key);
-  if (!record || record.credits < CREDITS_PER_CALL)
+  if (!record || record.credits < 1)
     return json({ error: 'No credits remaining.', credits: 0, hint: 'Purchase more at prepaired.ijneb.dev' }, 402);
 
-  let body;
-  try { body = await request.json(); } catch { return json({ error: 'Invalid body' }, 400); }
-  body.model = PAID_MODEL;
-  body.max_tokens = Math.min(body.max_tokens || 1000, 1200);
+  // Rate limit: max 50 API calls per session (10 questions × 3 turns + question generation + buffer)
+  const rateLimitKey = `ratelimit:${session.email}`;
+  const callCount = await getKV(env.CREDITS, rateLimitKey) || { count: 0 };
+  if (callCount.count >= 50)
+    return json({ error: 'Session call limit reached. Complete the interview to continue.' }, 429);
+  callCount.count += 1;
+  await env.CREDITS.put(rateLimitKey, JSON.stringify(callCount), { expirationTtl: 3600 });
+
+  let raw;
+  try { raw = await request.json(); } catch { return json({ error: 'Invalid body' }, 400); }
+
+  // Allowlist fields to prevent abuse of pooled API key (no tools, metadata, etc.)
+  const body = {
+    model: PAID_MODEL,
+    max_tokens: Math.min(raw.max_tokens || 1000, 1200),
+    system: typeof raw.system === 'string' ? raw.system : undefined,
+    messages: Array.isArray(raw.messages) ? raw.messages : [],
+  };
 
   let ar;
   try {
@@ -242,15 +293,54 @@ async function handleChatProxy(request, env) {
       headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify(body),
     });
-  } catch (e) { return json({ error: 'Upstream unreachable: '+e.message }, 502); }
+  } catch (e) { return json({ error: 'AI service temporarily unavailable. Please try again.' }, 502); }
 
   const rd = await ar.json();
   if (ar.ok && !rd.error) {
-    const updated = { ...record, credits: record.credits-CREDITS_PER_CALL, lastUsed: new Date().toISOString() };
-    await env.CREDITS.put(key, JSON.stringify(updated), { expirationTtl: 60*60*24*365 });
-    return new Response(JSON.stringify(rd), { status: ar.status, headers: { ...CORS, 'Content-Type': 'application/json', 'X-Credits-Remaining': String(updated.credits) } });
+    return new Response(JSON.stringify(rd), { status: ar.status, headers: { ..._cors, 'Content-Type': 'application/json', 'X-Credits-Remaining': String(record.credits) } });
   }
-  return new Response(JSON.stringify(rd), { status: ar.status, headers: { ...CORS, 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify(rd), { status: ar.status, headers: { ..._cors, 'Content-Type': 'application/json' } });
+}
+
+// ── SESSION COMPLETE ─────────────────────────────────────────────────────────
+// Called by the client after the interview summary screen is shown.
+// Deducts 1 credit. Idempotent per session token — a session can only be
+// completed once to prevent double-deduction.
+async function handleSessionComplete(request, env) {
+  const session = await validateToken(request.headers.get('X-Session-Token'), env);
+  if (!session) return json({ error: 'Invalid or expired session.' }, 401);
+
+  let body;
+  try { body = await request.json(); } catch { body = {}; }
+  const sessionId = body.sessionId || '';
+
+  // Idempotency: check if this session was already completed
+  if (sessionId) {
+    const completedKey = `completed:${session.email}:${sessionId}`;
+    const already = await getKV(env.CREDITS, completedKey);
+    if (already) return json({ ok: true, credits: already.creditsAfter, alreadyCompleted: true });
+
+    // Mark as completed (TTL 7 days to prevent replay)
+    const key = `credits:${session.email}`;
+    const record = await getKV(env.CREDITS, key);
+    if (!record || record.credits < 1)
+      return json({ error: 'No credits remaining.' }, 402);
+
+    const updated = { ...record, credits: record.credits - 1, lastUsed: new Date().toISOString() };
+    await env.CREDITS.put(key, JSON.stringify(updated), { expirationTtl: 60*60*24*365 });
+    await env.CREDITS.put(completedKey, JSON.stringify({ completedAt: new Date().toISOString(), creditsAfter: updated.credits }), { expirationTtl: 60*60*24*7 });
+    return json({ ok: true, credits: updated.credits });
+  }
+
+  // No sessionId provided — still deduct but no idempotency guarantee
+  const key = `credits:${session.email}`;
+  const record = await getKV(env.CREDITS, key);
+  if (!record || record.credits < 1)
+    return json({ error: 'No credits remaining.' }, 402);
+
+  const updated = { ...record, credits: record.credits - 1, lastUsed: new Date().toISOString() };
+  await env.CREDITS.put(key, JSON.stringify(updated), { expirationTtl: 60*60*24*365 });
+  return json({ ok: true, credits: updated.credits });
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -260,6 +350,12 @@ async function issueToken(email, secret) {
 }
 async function validateToken(token, env) {
   if (!token) return null;
+  // Verify HMAC signature before KV lookup
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+  const [payload, sig] = parts;
+  const expected = await hmacSign(payload, env.SESSION_SECRET);
+  if (!await timingSafeEqual(sig, expected)) return null;
   return await getKV(env.CREDITS, `session:${token}`);
 }
 async function hmacSign(data, secret) {
@@ -280,8 +376,10 @@ async function verifyWhopSig(body, sig, secret) {
     return await crypto.subtle.verify('HMAC', key, hexToBytes(sig.replace('sha256=','')), new TextEncoder().encode(body));
   } catch { return false; }
 }
-function checkAdmin(request, env) {
-  return request.headers.get('X-Admin-Secret') === env.ADMIN_SECRET;
+async function checkAdmin(request, env) {
+  const provided = request.headers.get('X-Admin-Secret') || '';
+  if (!provided || !env.ADMIN_SECRET) return false;
+  return await timingSafeEqual(provided, env.ADMIN_SECRET);
 }
 async function getKV(ns, key) {
   try { const v=await ns.get(key); return v?JSON.parse(v):null; } catch { return null; }
@@ -292,7 +390,7 @@ function norm(e) {
   return t.includes('@')?t:'';
 }
 function json(data, status=200) {
-  return new Response(JSON.stringify(data), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify(data), { status, headers: { ..._cors, 'Content-Type': 'application/json' } });
 }
 function hexToBytes(hex) {
   const b=new Uint8Array(hex.length/2);
