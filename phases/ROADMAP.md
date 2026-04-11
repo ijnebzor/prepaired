@@ -35,29 +35,33 @@ Each phase stands alone. Each ships with a security audit and its own pricing.
    [x] Token HMAC verification
    [x] Per-session rate limiting (50 calls/hr)
    [x] Error messages sanitised
- [ ] LinkedIn profile import (paste URL or PDF → auto-fill candidate profile)
+ [x] LinkedIn/resume PDF upload (drag-drop PDF import for candidate profiles)
  [ ] LinkedIn job posting import (paste URL → auto-extract JD)
  [ ] Salary benchmarks for role + location (needs web search API)
  [ ] Company sentiment — Glassdoor ratings, recent news, red flags (needs web search API)
  [ ] Interview question mining — "people who interviewed at [company] reported these questions"
  [ ] Second security audit pass
 
-## Phase 3: Negotiation Simulator — PLANNED (Q3 2026)
- Separate pricing tier.
+## Phase 3: Negotiation Simulator — IN PROGRESS (Q3 2026)
+ Separate pricing tier. Same page as interview.
  3a — Salary Negotiation (New Role):
- [ ] Offer roleplay (AI plays recruiter/hiring manager)
- [ ] Counter coaching (uses interview highlights as leverage)
+ [x] Offer roleplay (AI plays recruiter/hiring manager)
+ [x] Counter coaching (coaching block after each AI response)
+ [x] 10-turn negotiation flow with final assessment
+ [x] Negotiation scoring (Outcome, Confidence, Technique, Professionalism)
+ [x] Prompt injection defence on all inputs
  [ ] Market bounds (won't accept below market without flagging)
  [ ] Escalation paths ("band maximum", "revisit in 6 months", equity trade-offs)
  [ ] Benefits negotiation (equity, remote, signing bonus, PTO, learning budget)
  [ ] Multi-offer scenarios (compare and leverage competing offers)
  3b — Promotion Negotiation (Current Role):
- [ ] Promotion pitch roleplay (manager plays supportive, skeptical, or budget-blocked)
- [ ] Evidence builder ("already doing the job" framework)
- [ ] Objection handling ("not the right time", "need more visibility", "no headcount")
+ [x] Promotion pitch roleplay (AI plays manager)
+ [x] Evidence builder (input achievements, impact, scope growth)
+ [x] Manager style selector (supportive, data-driven, avoidant, hierarchical)
+ [x] Coaching per response (strength, improve, suggestion)
+ [ ] Objection handling templates
  [ ] Raise vs. title vs. scope coaching
  [ ] Timing advisor (review cycles, reorgs, budget season)
- [ ] Manager style selector (supportive, data-driven, avoidant, hierarchical)
  [ ] Security audit (OWASP Top 10 2021+2025, OWASP LLM, NIST CSF 2.0, ISO 27001)
 
 ## Phase 4: Career Intelligence — PLANNED (Q4 2026)
