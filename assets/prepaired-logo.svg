@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" role="img" aria-labelledby="title desc">
+  <title id="title">PrepAIred</title>
+  <desc id="desc">PrepAIred wordmark with paired bracket icon.</desc>
+  <rect width="64" height="64" rx="12" fill="#000000"/>
+  <path d="M28 13 14 32l14 19" fill="none" stroke="#00e5cc" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M36 13 50 32 36 51" fill="none" stroke="#22c55e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M32 22v20" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="32" cy="32" r="4" fill="#f9fafb"/>
+  <text x="78" y="40" fill="#f9fafb" font-family="Syne, Inter, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="0">Prep</text>
+  <text x="146" y="40" fill="#00e5cc" font-family="Syne, Inter, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="0">AI</text>
+  <text x="181" y="40" fill="#f9fafb" font-family="Syne, Inter, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="0">red</text>
+</svg>

@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- PrepAIred v0.5.0 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
-<meta name="description" content="PrepAIred — AI-powered interview simulator. Five personalities. Real time pressure. Honest scoring. Bring your own API key.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.groq.com https://prepaired-api.ijnebzor.workers.dev https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
-<title>PrepAIred — HireAId</title>
+<!-- PrepAIred v2.0.0 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
+<meta name="description" content="PrepAIred is an AI-powered interview and negotiation simulator with honest scoring, Groq BYOK, and paid Claude credits.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.groq.com https://api.prepaired.ijneb.dev https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
+<link rel="canonical" href="https://prepaired.ijneb.dev/">
+<link rel="icon" href="assets/prepaired-icon.svg" type="image/svg+xml">
+<title>PrepAIred — Interview simulation that does not let you off easy</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Syne:wght@400;500;600;700;800&display=swap');
 :root {
@@ -24,7 +26,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;b
 #landingPage{display:flex;flex-direction:column;min-height:100vh;}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:border-color 0.3s;}
 nav.scrolled{border-bottom-color:var(--border);}
-.nav-brand{font-family:var(--display);font-size:18px;font-weight:800;color:var(--text-bright);letter-spacing:-0.02em;}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:18px;font-weight:800;color:var(--text-bright);letter-spacing:0;text-decoration:none;}
+.nav-brand img{width:34px;height:34px;display:block;}
 .nav-brand span{color:var(--cyan);}
 .nav-links{display:flex;align-items:center;gap:32px;list-style:none;font-family:var(--mono);font-size:11px;color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;}
 .nav-links a{color:var(--text-dim);text-decoration:none;transition:color 0.2s;}
@@ -83,6 +86,11 @@ footer{padding:48px;border-top:1px solid var(--border);display:flex;align-items:
 .footer-links a{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;transition:color 0.2s;}
 .footer-links a:hover{color:var(--text-bright);}
 .footer-copy{font-family:var(--mono);font-size:10px;color:var(--text-dim);}
+.launch-notes{padding:56px 48px;border-top:1px solid var(--border);background:var(--bg);display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;}
+.launch-note{border:1px solid var(--border);background:var(--surface);padding:24px;}
+.launch-note-title{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:10px;}
+.launch-note-text{font-size:13px;line-height:1.65;color:var(--text);}
+.launch-note-text a{color:var(--cyan);text-decoration:none;border-bottom:1px solid rgba(0,229,204,0.35);}
 
 /* SETUP MODAL */
 #setupModal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
@@ -328,12 +336,12 @@ textarea:disabled{opacity:0.4;}
 <!-- LANDING -->
 <div id="landingPage">
   <nav id="mainNav">
-    <div class="nav-brand">Prep<span>AI</span>red</div>
+    <a class="nav-brand" href="https://prepaired.ijneb.dev/" aria-label="PrepAIred home"><img src="assets/prepaired-icon.svg" alt="" width="34" height="34">Prep<span>AI</span>red</a>
     <ul class="nav-links">
       <li><a href="#features">Features</a></li>
       <li><a href="#phases">Roadmap</a></li>
-      <li><a href="https://github.com/ijnebzor/prepaired" target="_blank">GitHub</a></li>
-      <li><a href="https://ijneb.dev" target="_blank">ijneb.dev</a></li>
+      <li><a href="#privacy">Privacy</a></li>
+      <li><a href="https://github.com/ijnebzor/prepaired" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
     <button class="nav-cta" onclick="openSetup()">Get PrepAIred &rarr;</button>
   </nav>
@@ -348,10 +356,10 @@ textarea:disabled{opacity:0.4;}
         <span class="hero-tag purple">Career Intelligence</span>
         <span class="hero-tag yellow">Your Key &middot; Your Data</span>
       </div>
-      <p class="hero-desc">Five interviewer personalities. Variable time pressure. <strong>Real push-back</strong>, not gold stars for showing up. Paste the job description, bring your own API key &mdash; runs entirely in your browser. Free tier via Groq. <strong>Costs pennies per session.</strong></p>
+      <p class="hero-desc">Five interviewer personalities. Variable time pressure. <strong>Real push-back</strong>, not gold stars for showing up. Paste the job description, bring your own Groq key for the free path, or buy Claude credits when you do not want to manage a key.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="openSetup()"><span>Start Interview</span><span>&rarr;</span></button>
-        <button class="btn-ghost" onclick="window.open('https://github.com/ijnebzor/prepaired','_blank')">View on GitHub</button>
+        <button class="btn-ghost" onclick="window.open('https://github.com/ijnebzor/prepaired','_blank','noopener')">View on GitHub</button>
       </div>
       <div class="hero-note">Free tier via Groq &mdash; no credit card &middot; or <a href="#" onclick="openSetup();return false;" style="color:var(--cyan);text-decoration:none;border-bottom:1px solid rgba(0,229,204,0.3);">buy credits</a> for Claude</div>
     </div>
@@ -406,9 +414,23 @@ textarea:disabled{opacity:0.4;}
       </div>
     </div>
   </section>
+  <section class="launch-notes" id="privacy">
+    <div class="launch-note">
+      <div class="launch-note-title">Privacy</div>
+      <div class="launch-note-text">Free sessions call Groq directly from your browser. Credit sessions use the PrepAIred Worker to call Claude, but answers and profile text are not stored server-side.</div>
+    </div>
+    <div class="launch-note">
+      <div class="launch-note-title">Credits</div>
+      <div class="launch-note-text">Credits are linked to the email used at checkout. A 6-digit email code unlocks the session, and one credit is used after the summary screen is reached.</div>
+    </div>
+    <div class="launch-note">
+      <div class="launch-note-title">Support</div>
+      <div class="launch-note-text">Questions, failed credit delivery, or unused-credit refunds: <a href="mailto:benjiz@gmail.com">benji@ijneb.dev</a>.</div>
+    </div>
+  </section>
   <footer>
     <div><div class="footer-brand">Prep<span>AI</span>red</div><div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:4px;">HireAId &mdash; get PrepAIred.</div></div>
-    <div class="footer-links"><a href="https://github.com/ijnebzor/prepaired" target="_blank">GitHub</a><a href="https://github.com/ijnebzor/prepaired/blob/main/SECURITY.md" target="_blank">Security</a><a href="https://ijneb.dev" target="_blank">ijneb.dev</a></div>
+    <div class="footer-links"><a href="#privacy">Privacy</a><a href="https://github.com/ijnebzor/prepaired/blob/main/SECURITY.md" target="_blank" rel="noopener">Security</a><a href="https://github.com/ijnebzor/prepaired" target="_blank" rel="noopener">GitHub</a><a href="mailto:benjiz@gmail.com">Support</a></div>
     <div class="footer-copy">MIT &middot; Built by <a href="https://ijneb.dev" style="color:var(--cyan);text-decoration:none;">Benji Zorella</a> &middot; AI-assisted</div>
   </footer>
 </div>
@@ -470,7 +492,7 @@ textarea:disabled{opacity:0.4;}
       <div class="mode-pane active" id="pane-byok">
         <div style="padding:12px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.6;">
           <strong style="color:var(--green)">Free.</strong> Groq runs Llama 3.1 at speed with no credit card required.
-          Get a free key at <a href="https://console.groq.com" target="_blank" style="color:var(--cyan);">console.groq.com</a> &mdash; takes 60 seconds.
+          Get a free key at <a href="https://console.groq.com" target="_blank" rel="noopener" style="color:var(--cyan);">console.groq.com</a> &mdash; takes 60 seconds.
           <span style="display:block;margin-top:6px;color:var(--text-dim);">Want Claude? Use the <button onclick="document.querySelector('[data-mode=credits]').click()" style="background:none;border:none;color:var(--yellow);cursor:pointer;font-family:var(--mono);font-size:11px;padding:0;text-decoration:underline;">Credits tab</button> &rarr;</span>
         </div>
         <div class="api-input-wrap">
@@ -489,20 +511,20 @@ textarea:disabled{opacity:0.4;}
       <!-- Credits pane -->
       <div class="mode-pane" id="pane-credits">
         <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.6;">
-          No API key needed. Uses Claude Haiku via our servers. One credit = one full interview session.
+          No API key needed. Uses Claude Haiku via the PrepAIred Worker. One credit = one full session. Unused credits are refundable on request.
         </div>
         <div class="credit-packs">
-          <a class="credit-pack" href="WHOP_SINGLE_URL" target="_blank">
+          <a class="credit-pack" href="https://whop.com/joined/prepaired/products/1-credit-1-interview/" target="_blank" rel="noopener">
             <div class="pack-price">$2</div>
             <div class="pack-count">1 interview</div>
             <div class="pack-unit">$2.00 / session</div>
           </a>
-          <a class="credit-pack" href="WHOP_5PACK_URL" target="_blank" style="border-color:rgba(234,179,8,0.3);background:rgba(234,179,8,0.03);">
+          <a class="credit-pack" href="https://whop.com/joined/prepaired/products/5-credits-5-interviews/" target="_blank" rel="noopener" style="border-color:rgba(234,179,8,0.3);background:rgba(234,179,8,0.03);">
             <div class="pack-price" style="color:var(--yellow)">$5</div>
             <div class="pack-count">5 interviews</div>
             <div class="pack-unit">$1.00 / session</div>
           </a>
-          <a class="credit-pack" href="WHOP_15PACK_URL" target="_blank">
+          <a class="credit-pack" href="https://whop.com/joined/prepaired/products/15-credits-15-interviews/" target="_blank" rel="noopener">
             <div class="pack-price">$10</div>
             <div class="pack-count">15 interviews</div>
             <div class="pack-unit">$0.67 / session</div>
@@ -772,8 +794,7 @@ var CHAR_LIMIT=1500, MAX_DOOVER=3, MAX_TURNS=3;
 
 // ─── WORKER CONFIG ──────────────────────────────────────────────────────────────
 // BYOK = Groq only (free). Credits path uses Claude Haiku 4.5 via Worker.
-// Update this after deploying the Cloudflare Worker
-var WORKER_URL = 'https://prepaired-api.benjiz.workers.dev'; // 3 turns = initial answer + 2 follow-ups
+var WORKER_URL = 'https://api.prepaired.ijneb.dev';
 
 var cfg={
   apiKey:'', provider:'groq', personality:'adversarial',
@@ -807,7 +828,6 @@ function escHtml(s){
 function stripHTML(s){return s.replace(/<[^>]*>/g,'').replace(/\n\n+/g,'\n').trim();}
 
 window.addEventListener('beforeunload',function(){cfg.apiKey='';cfg.sessionToken='';});
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){cfg.apiKey='';cfg.sessionToken='';}});
 window.addEventListener('scroll',function(){
   var nav=document.getElementById('mainNav');
   if(nav)nav.classList.toggle('scrolled',window.scrollY>20);
