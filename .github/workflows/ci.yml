@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  launch-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+
+      - name: Install Worker dependencies
+        run: npm --prefix worker ci
+
+      - name: Run Worker tests
+        run: npm --prefix worker test
+
+      - name: Check launch assets and copy
+        run: node scripts/check-launch.mjs
+
+      - name: Dry-run Worker deploy
+        run: npm --prefix worker run deploy:prod -- --dry-run

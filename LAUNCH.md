@@ -73,7 +73,9 @@ The Worker product ID map is already configured for the current Whop products.
 ```bash
 node --check worker/src/index.js
 node -e "const fs=require('fs'); const html=fs.readFileSync('index.html','utf8'); const scripts=[...html.matchAll(/<script[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(m=>m[1]).join('\\n'); new Function(scripts); console.log('index inline scripts parse ok');"
+node scripts/check-launch.mjs
 npm --prefix worker ci
+npm --prefix worker test
 npm --prefix worker run deploy -- --dry-run
 npm --prefix worker run deploy:prod -- --dry-run
 ```
