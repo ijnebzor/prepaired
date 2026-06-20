@@ -10,6 +10,8 @@
  *  - Token validation verifies HMAC signature before KV lookup
  *  - Per-session rate limiting on chat proxy (max 50 calls/hour)
  *  - Error messages no longer leak internal details
+ *  - Whop webhook verification supports Standard Webhooks headers
+ *  - Whop webhook deliveries are idempotent by webhook-id
  *
  * Changes from v1.0:
  *  - Email OTP verification (6-digit code, 10-minute expiry)
@@ -52,6 +54,8 @@ const PAID_MODEL         = 'claude-haiku-4-5-20251001';
 const OTP_EXPIRY_SECONDS = 600;
 const OTP_MAX_ATTEMPTS   = 5;
 const SESSION_TTL        = 86400;
+const WEBHOOK_TOLERANCE_SECONDS = 300;
+const WHOP_CREDIT_EVENTS = new Set(['payment.succeeded', 'membership.created', 'membership.activated']);
 
 let _cors = {};
 
@@ -206,27 +210,72 @@ async function handleAdminCreditsLookup(request, env) {
 
 // ── WHOP WEBHOOK ─────────────────────────────────────────────────────────────
 async function handleWhopWebhook(request, env) {
-  const sig = request.headers.get('X-Whop-Signature');
   const body = await request.text();
-  if (!await verifyWhopSig(body, sig, env.WHOP_WEBHOOK_SECRET))
+  const verification = await verifyWhopRequest(request, body, env.WHOP_WEBHOOK_SECRET);
+  if (!verification.ok)
     return json({ error: 'Invalid signature' }, 401);
 
   let event;
   try { event = JSON.parse(body); } catch { return json({ error: 'Invalid JSON' }, 400); }
-  if (!['payment.succeeded','membership.created'].includes(event.event))
-    return json({ ok: true, skipped: true });
+  const eventType = String(event.type || event.event || '').toLowerCase();
+  if (!WHOP_CREDIT_EVENTS.has(eventType))
+    return json({ ok: true, skipped: true, type: eventType || null });
 
-  const data = event.data;
-  const email = norm(data?.user?.email || data?.email || '');
-  const planId = data?.product?.id || data?.plan_id || 'single';
+  const dedupeId = verification.id || event.id || event.webhook_id || '';
+  const dedupeKey = dedupeId ? `webhook:${dedupeId}` : '';
+  if (dedupeKey) {
+    const already = await getKV(env.CREDITS, dedupeKey);
+    if (already) return json({ ok: true, duplicate: true, email: already.email, creditsAdded: already.creditsAdded });
+  }
+
+  const data = event.data || {};
+  const email = extractWhopEmail(data);
+  const planId = extractWhopPlanId(data);
   if (!email) return json({ error: 'No email in payload' }, 400);
 
-  const credits = resolveCredits(planId, data?.quantity || 1);
+  const credits = resolveCredits(planId, resolveWhopQuantity(data));
   const key = `credits:${email}`;
   const ex = await getKV(env.CREDITS, key);
   const rec = { credits: (ex?.credits||0)+credits, email, plan: planId, lastPurchase: new Date().toISOString(), totalPurchased: (ex?.totalPurchased||0)+credits };
   await env.CREDITS.put(key, JSON.stringify(rec), { expirationTtl: 60*60*24*365 });
+  if (dedupeKey) {
+    await env.CREDITS.put(dedupeKey, JSON.stringify({ email, creditsAdded: credits, completedAt: new Date().toISOString() }), { expirationTtl: 60*60*24*365 });
+  }
   return json({ ok: true, email, creditsAdded: credits, totalCredits: rec.credits });
+}
+
+function extractWhopEmail(data) {
+  return norm(
+    data?.user?.email ||
+    data?.customer?.email ||
+    data?.member?.email ||
+    data?.membership?.user?.email ||
+    data?.membership?.email ||
+    data?.email ||
+    data?.user_email ||
+    data?.metadata?.email ||
+    ''
+  );
+}
+
+function extractWhopPlanId(data) {
+  return (
+    data?.product?.id ||
+    data?.plan?.id ||
+    data?.membership?.product?.id ||
+    data?.membership?.plan?.id ||
+    data?.product_id ||
+    data?.plan_id ||
+    data?.metadata?.product_id ||
+    data?.metadata?.plan_id ||
+    'single'
+  );
+}
+
+function resolveWhopQuantity(data) {
+  const raw = data?.quantity || data?.qty || data?.line_item?.quantity || data?.metadata?.quantity || 1;
+  const qty = parseInt(raw, 10);
+  return Number.isFinite(qty) && qty > 0 ? Math.min(qty, 100) : 1;
 }
 
 function resolveCredits(planId, qty) {
@@ -367,12 +416,89 @@ async function timingSafeEqual(a, b) {
   let d=0; for(let i=0;i<va.length;i++) d|=va[i]^vb[i];
   return d===0;
 }
-async function verifyWhopSig(body, sig, secret) {
-  if (!sig||!secret) return false;
-  try {
-    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name:'HMAC', hash:'SHA-256' }, false, ['verify']);
-    return await crypto.subtle.verify('HMAC', key, hexToBytes(sig.replace('sha256=','')), new TextEncoder().encode(body));
-  } catch { return false; }
+async function verifyWhopRequest(request, body, secret) {
+  if (!secret) return { ok: false };
+
+  const id = request.headers.get('webhook-id') || '';
+  const timestamp = request.headers.get('webhook-timestamp') || '';
+  const signature = request.headers.get('webhook-signature') || '';
+
+  if (id && timestamp && signature) {
+    const ts = Number(timestamp);
+    const now = Math.floor(Date.now() / 1000);
+    if (!Number.isFinite(ts) || Math.abs(now - ts) > WEBHOOK_TOLERANCE_SECONDS)
+      return { ok: false };
+
+    const signed = `${id}.${timestamp}.${body}`;
+    const signatures = parseStandardWebhookSignatures(signature);
+    const secrets = secretCandidates(secret);
+    for (const secretBytes of secrets) {
+      const expected = await hmacBase64(signed, secretBytes);
+      for (const candidate of signatures) {
+        if (await timingSafeEqual(normalizeBase64(candidate), normalizeBase64(expected)))
+          return { ok: true, id };
+      }
+    }
+    return { ok: false };
+  }
+
+  const legacy = request.headers.get('X-Whop-Signature') || request.headers.get('Whop-Signature') || '';
+  if (legacy && await verifyLegacyWhopSignature(body, legacy, secret))
+    return { ok: true, id: request.headers.get('webhook-id') || '' };
+
+  return { ok: false };
+}
+
+function parseStandardWebhookSignatures(header) {
+  return header.split(' ')
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map(part => {
+      const i = part.indexOf(',');
+      return i === -1 ? null : { version: part.slice(0, i), value: part.slice(i + 1) };
+    })
+    .filter(part => part && part.version === 'v1' && part.value)
+    .map(part => part.value);
+}
+
+function secretCandidates(secret) {
+  const raw = String(secret || '').trim();
+  const values = [textBytes(raw)];
+  const stripped = raw.startsWith('whsec_') ? raw.slice(6) : raw;
+  if (stripped !== raw) values.push(textBytes(stripped));
+  try { values.push(base64ToBytes(stripped)); } catch {}
+  try { values.push(base64ToBytes(raw)); } catch {}
+
+  const seen = new Set();
+  return values.filter(bytes => {
+    const key = bytesToHex(bytes);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+async function verifyLegacyWhopSignature(body, sig, secret) {
+  const supplied = sig.replace(/^sha256=/i, '').trim();
+  const secrets = secretCandidates(secret);
+  for (const secretBytes of secrets) {
+    const hex = bytesToHex(await hmacBytes(body, secretBytes));
+    if (/^[a-f0-9]{64}$/i.test(supplied) && await timingSafeEqual(hex, supplied.toLowerCase()))
+      return true;
+    const b64 = await hmacBase64(body, secretBytes);
+    if (await timingSafeEqual(normalizeBase64(b64), normalizeBase64(supplied)))
+      return true;
+  }
+  return false;
+}
+
+async function hmacBytes(data, secretBytes) {
+  const key = await crypto.subtle.importKey('raw', secretBytes, { name:'HMAC', hash:'SHA-256' }, false, ['sign']);
+  return new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data)));
+}
+
+async function hmacBase64(data, secretBytes) {
+  return bytesToBase64(await hmacBytes(data, secretBytes));
 }
 async function checkAdmin(request, env) {
   const provided = request.headers.get('X-Admin-Secret') || '';
@@ -395,6 +521,24 @@ function hexToBytes(hex) {
   for(let i=0;i<hex.length;i+=2) b[i/2]=parseInt(hex.slice(i,i+2),16);
   return b;
 }
+function base64ToBytes(s) {
+  const raw = atob(normalizeBase64(s));
+  const b = new Uint8Array(raw.length);
+  for (let i=0;i<raw.length;i++) b[i] = raw.charCodeAt(i);
+  return b;
+}
+function bytesToBase64(bytes) {
+  let s = '';
+  for (let i=0;i<bytes.length;i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s);
+}
 function bytesToHex(bytes) {
   return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function textBytes(s) {
+  return new TextEncoder().encode(s);
+}
+function normalizeBase64(s) {
+  const clean = String(s || '').trim().replace(/-/g, '+').replace(/_/g, '/');
+  return clean + '='.repeat((4 - clean.length % 4) % 4);
 }

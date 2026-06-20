@@ -4,6 +4,30 @@ All notable changes to PrepAIred. Follows [Keep a Changelog](https://keepachange
 
 ---
 
+## [2.0.0] — 2026-06-21
+
+### Added
+
+- Canonical launch domain configuration for `prepaired.ijneb.dev`.
+- Paid Claude credits via the PrepAIred Cloudflare Worker.
+- Real Whop checkout links for 1, 5, and 15 credit packs.
+- Email OTP verification for credit sessions.
+- Icon-first PrepAIred SVG logo and favicon assets.
+- Launch runbook with DNS, Mailgun, Resend, Whop, Worker secret, and smoke-test steps.
+
+### Changed
+
+- Free BYOK path is Groq-only for a clearer launch UX.
+- Worker production deploy uses Wrangler 4 and `api.prepaired.ijneb.dev`.
+- Public docs now describe the real Groq BYOK plus Claude credits architecture.
+- Browser sessions are no longer cleared merely because the tab loses visibility.
+
+### Security
+
+- Whop webhook verification now supports Standard Webhooks headers.
+- Whop webhook processing is idempotent by `webhook-id`.
+- Worker chat proxy, OTP, signed session, and post-summary credit deduction controls are documented.
+
 ## [0.3.1] — 2026-03-06
 
 ### 🐛 Fixed
