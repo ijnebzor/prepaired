@@ -73,6 +73,12 @@ Next-week launch checklist and user-run infrastructure steps live in [LAUNCH.md]
 
 Worker deployment details live in [worker/DEPLOY.md](worker/DEPLOY.md).
 
+Quick launch status check:
+
+```bash
+node scripts/check-launch-status.mjs
+```
+
 ## Tech
 
 | Thing | Choice |

@@ -119,6 +119,12 @@ npm --prefix worker run deploy:prod -- --dry-run
 
 ## Runtime Verification
 
+Quick current-state check:
+
+```bash
+node scripts/check-launch-status.mjs
+```
+
 Before switching GitHub Pages to the custom domain, run the full cutover gate:
 
 ```bash
