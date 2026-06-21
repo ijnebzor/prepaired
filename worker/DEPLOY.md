@@ -4,6 +4,8 @@ The Worker powers paid Claude credits, OTP auth, Whop fulfillment, and admin cre
 
 Production API: `https://api.prepaired.ijneb.dev`
 
+Note: the production `custom_domain = true` route requires `ijneb.dev` to be an active Cloudflare zone. If the domain is still served from Google Cloud DNS, deploy the Worker to Workers.dev first or move the zone to Cloudflare before relying on `api.prepaired.ijneb.dev`.
+
 ## Install
 
 ```bash
@@ -56,6 +58,12 @@ Expected:
 
 ```json
 {"status":"ok","version":"2.0.0"}
+```
+
+After deployment, run the external launch gate from the repo root:
+
+```bash
+node scripts/check-cutover.mjs
 ```
 
 ## Whop Webhook

@@ -15,6 +15,14 @@ API: `https://api.prepaired.ijneb.dev`
   - Once the DNS record resolves, add a root `CNAME` file containing `prepaired.ijneb.dev` or set the same custom domain in GitHub Pages.
 - Add Cloudflare Worker custom domain:
   - `api.prepaired.ijneb.dev` attached to Worker `prepaired-api`
+  - Cloudflare Worker Custom Domains require `ijneb.dev` to be an active Cloudflare zone. `ijneb.dev` is currently served by Google Cloud DNS, so either move the zone to Cloudflare and recreate the existing Mailgun/Google DNS records there, or use the Workers.dev URL as an interim API and update `WORKER_URL`, CSP, and the Whop webhook endpoint in one release commit.
+  - The current `worker/wrangler.toml` is configured for the Cloudflare-zone path.
+
+Current reachable preview until DNS cutover:
+
+```text
+https://ijnebzor.github.io/prepaired/
+```
 
 ### Email
 
@@ -82,6 +90,14 @@ npm --prefix worker run deploy:prod -- --dry-run
 ```
 
 ## Runtime Verification
+
+Before switching GitHub Pages to the custom domain, run the full cutover gate:
+
+```bash
+node scripts/check-cutover.mjs
+```
+
+It must pass before `prepaired.ijneb.dev` is made the public launch URL.
 
 ```bash
 curl -sS https://api.prepaired.ijneb.dev/health

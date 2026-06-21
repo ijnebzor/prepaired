@@ -5,6 +5,8 @@ compatibility_flags = ["nodejs_compat"]
 
 # Worker runs on the free plan — no CPU time issues for this workload.
 # Production API custom domain: https://api.prepaired.ijneb.dev
+# Note: Cloudflare custom domains require ijneb.dev to be an active
+# Cloudflare zone before this route can be created.
 
 [[kv_namespaces]]
 binding = "CREDITS"
