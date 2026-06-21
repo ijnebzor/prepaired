@@ -9,8 +9,10 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --env production",
     "deploy:prod": "wrangler deploy --env production",
+    "deploy:workers-dev": "wrangler deploy --env=\"\"",
     "test": "npm run check && node test/smoke.mjs",
     "tail": "wrangler tail --env production",
+    "tail:workers-dev": "wrangler tail --env=\"\"",
     "kv:create": "wrangler kv:namespace create CREDITS"
   },
   "devDependencies": {

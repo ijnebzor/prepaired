@@ -1,0 +1,102 @@
+name: Deploy Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deploy target
+        required: true
+        default: workers-dev
+        type: choice
+        options:
+          - workers-dev
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+
+      - name: Install Worker dependencies
+        run: npm --prefix worker ci
+
+      - name: Validate Worker
+        run: npm --prefix worker test
+
+      - name: Check required secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WHOP_WEBHOOK_SECRET: ${{ secrets.WHOP_WEBHOOK_SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN ANTHROPIC_API_KEY WHOP_WEBHOOK_SECRET SESSION_SECRET RESEND_API_KEY FROM_EMAIL ADMIN_SECRET; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is not set"
+              exit 1
+            fi
+          done
+
+      - name: Set Worker secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WHOP_WEBHOOK_SECRET: ${{ secrets.WHOP_WEBHOOK_SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          set -euo pipefail
+          if [ "$TARGET" = "production" ]; then
+            ENV_ARGS=(--env production)
+          else
+            ENV_ARGS=(--env "")
+          fi
+
+          printf '%s' "$ANTHROPIC_API_KEY" | npm --prefix worker exec -- wrangler secret put ANTHROPIC_API_KEY "${ENV_ARGS[@]}"
+          printf '%s' "$WHOP_WEBHOOK_SECRET" | npm --prefix worker exec -- wrangler secret put WHOP_WEBHOOK_SECRET "${ENV_ARGS[@]}"
+          printf '%s' "$SESSION_SECRET" | npm --prefix worker exec -- wrangler secret put SESSION_SECRET "${ENV_ARGS[@]}"
+          printf '%s' "$RESEND_API_KEY" | npm --prefix worker exec -- wrangler secret put RESEND_API_KEY "${ENV_ARGS[@]}"
+          printf '%s' "$FROM_EMAIL" | npm --prefix worker exec -- wrangler secret put FROM_EMAIL "${ENV_ARGS[@]}"
+          printf '%s' "$ADMIN_SECRET" | npm --prefix worker exec -- wrangler secret put ADMIN_SECRET "${ENV_ARGS[@]}"
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          set -euo pipefail
+          if [ "$TARGET" = "production" ]; then
+            npm --prefix worker run deploy:prod
+          else
+            npm --prefix worker run deploy:workers-dev
+          fi
+
+      - name: Print smoke-test URLs
+        env:
+          TARGET: ${{ inputs.target }}
+        run: |
+          set -euo pipefail
+          if [ "$TARGET" = "production" ]; then
+            echo "API_URL=https://api.prepaired.ijneb.dev" >> "$GITHUB_STEP_SUMMARY"
+            echo "Run: node scripts/check-cutover.mjs" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Find the Workers.dev URL in the deploy log. It should look like https://prepaired-api.<account-subdomain>.workers.dev" >> "$GITHUB_STEP_SUMMARY"
+            echo "Run: PREPAIRED_API_URL=https://prepaired-api.<account-subdomain>.workers.dev node scripts/check-cutover.mjs --interim" >> "$GITHUB_STEP_SUMMARY"
+            echo "Preview: https://ijnebzor.github.io/prepaired/?api=https%3A%2F%2Fprepaired-api.<account-subdomain>.workers.dev" >> "$GITHUB_STEP_SUMMARY"
+          fi

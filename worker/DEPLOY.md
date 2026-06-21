@@ -46,6 +46,16 @@ Generate `SESSION_SECRET` if needed:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
+For GitHub Actions deployment, add the same values as repository secrets:
+
+- `CLOUDFLARE_API_TOKEN`
+- `ANTHROPIC_API_KEY`
+- `WHOP_WEBHOOK_SECRET`
+- `SESSION_SECRET`
+- `RESEND_API_KEY`
+- `FROM_EMAIL`
+- `ADMIN_SECRET`
+
 ## Deploy
 
 Dry run:
@@ -54,11 +64,23 @@ Dry run:
 npm run deploy:prod -- --dry-run
 ```
 
-Production deploy:
+Interim Workers.dev deploy:
+
+```bash
+npm run deploy:workers-dev
+```
+
+Production custom-domain deploy:
 
 ```bash
 npm run deploy:prod
 ```
+
+GitHub Actions deploy:
+
+1. Open GitHub Actions > Deploy Worker.
+2. Run the workflow with `target=workers-dev` for the interim API, or `target=production` after the Cloudflare zone/custom domain is ready.
+3. Copy the deployed URL from the workflow log or step summary.
 
 Health check:
 

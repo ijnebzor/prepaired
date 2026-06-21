@@ -67,6 +67,16 @@ Generate `SESSION_SECRET` locally if needed:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
+Alternatively, add these GitHub repository secrets and run the manual **Deploy Worker** workflow with `target=workers-dev`:
+
+- `CLOUDFLARE_API_TOKEN`
+- `ANTHROPIC_API_KEY`
+- `WHOP_WEBHOOK_SECRET`
+- `SESSION_SECRET`
+- `RESEND_API_KEY`
+- `FROM_EMAIL`
+- `ADMIN_SECRET`
+
 ### Whop
 
 Webhook endpoint:
