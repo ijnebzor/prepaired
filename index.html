@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- PrepAIred v2.0.0 | HireAId — get PrepAIred | github.com/ijnebzor/prepaired -->
 <meta name="description" content="PrepAIred is an AI-powered interview and negotiation simulator with honest scoring, Groq BYOK, and paid Claude credits.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.groq.com https://api.prepaired.ijneb.dev https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.groq.com https://api.prepaired.ijneb.dev https://*.workers.dev https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
 <link rel="canonical" href="https://ijnebzor.github.io/prepaired/">
 <link rel="icon" href="assets/prepaired-icon.svg" type="image/svg+xml">
 <title>PrepAIred — Interview simulation that does not let you off easy</title>
@@ -794,7 +794,39 @@ var CHAR_LIMIT=1500, MAX_DOOVER=3, MAX_TURNS=3;
 
 // ─── WORKER CONFIG ──────────────────────────────────────────────────────────────
 // BYOK = Groq only (free). Credits path uses Claude Haiku 4.5 via Worker.
-var WORKER_URL = 'https://api.prepaired.ijneb.dev';
+var DEFAULT_WORKER_URL = 'https://api.prepaired.ijneb.dev';
+var WORKER_URL = resolveWorkerUrl();
+
+function normalizeWorkerUrl(raw){
+  try{
+    var url = new URL(String(raw || '').trim());
+    var host = url.hostname.toLowerCase();
+    var allowed = host === 'api.prepaired.ijneb.dev' ||
+      /^prepaired-api\.[a-z0-9-]+\.workers\.dev$/.test(host);
+    if(url.protocol !== 'https:' || !allowed) return '';
+    url.pathname = '';
+    url.search = '';
+    url.hash = '';
+    return url.toString().replace(/\/$/,'');
+  }catch(e){ return ''; }
+}
+
+function resolveWorkerUrl(){
+  var params = new URLSearchParams(window.location.search);
+  var override = params.get('api') || params.get('worker');
+  if(override === 'default'){
+    try{ localStorage.removeItem('prepaired_worker_url'); }catch(e){}
+    return DEFAULT_WORKER_URL;
+  }
+  var fromQuery = normalizeWorkerUrl(override);
+  if(fromQuery){
+    try{ localStorage.setItem('prepaired_worker_url', fromQuery); }catch(e){}
+    return fromQuery;
+  }
+  try{
+    return normalizeWorkerUrl(localStorage.getItem('prepaired_worker_url')) || DEFAULT_WORKER_URL;
+  }catch(e){ return DEFAULT_WORKER_URL; }
+}
 
 var cfg={
   apiKey:'', provider:'groq', personality:'adversarial',

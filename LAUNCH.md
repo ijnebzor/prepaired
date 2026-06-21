@@ -24,6 +24,18 @@ Current reachable preview until DNS cutover:
 https://ijnebzor.github.io/prepaired/
 ```
 
+Interim Workers.dev API cutover:
+
+- Deploy the Worker to Workers.dev after `wrangler login` succeeds.
+- The deployed Workers.dev hostname will be `https://prepaired-api.<account-subdomain>.workers.dev`.
+- Test the credit path from:
+
+```text
+https://ijnebzor.github.io/prepaired/?api=https%3A%2F%2Fprepaired-api.<account-subdomain>.workers.dev
+```
+
+The app accepts only `https://api.prepaired.ijneb.dev` or `https://prepaired-api.<account-subdomain>.workers.dev` as credit API endpoints, and persists a valid override in localStorage. Use `?api=default` to clear it.
+
 ### Email
 
 - In Mailgun, add an inbound route:
@@ -63,6 +75,12 @@ Webhook endpoint:
 https://api.prepaired.ijneb.dev/webhook/whop
 ```
 
+If using the interim Workers.dev API, use:
+
+```text
+https://prepaired-api.<account-subdomain>.workers.dev/webhook/whop
+```
+
 Subscribe to:
 
 - `payment.succeeded`
@@ -98,6 +116,12 @@ node scripts/check-cutover.mjs
 ```
 
 It must pass before `prepaired.ijneb.dev` is made the public launch URL.
+
+For the interim Workers.dev path, run:
+
+```bash
+PREPAIRED_API_URL=https://prepaired-api.<account-subdomain>.workers.dev node scripts/check-cutover.mjs --interim
+```
 
 ```bash
 curl -sS https://api.prepaired.ijneb.dev/health

@@ -29,7 +29,10 @@ new Function(inlineScripts);
 includes(html, '<link rel="canonical" href="https://ijnebzor.github.io/prepaired/">', 'canonical URL');
 includes(html, '<link rel="icon" href="assets/prepaired-icon.svg" type="image/svg+xml">', 'favicon');
 includes(html, '<img src="assets/prepaired-icon.svg"', 'nav logo');
-includes(html, "var WORKER_URL = 'https://api.prepaired.ijneb.dev';", 'Worker URL');
+includes(html, "var DEFAULT_WORKER_URL = 'https://api.prepaired.ijneb.dev';", 'default Worker URL');
+includes(html, 'https://*.workers.dev', 'Workers.dev CSP fallback');
+includes(html, 'prepaired_worker_url', 'Worker URL override storage key');
+includes(html, '^prepaired-api\\.[a-z0-9-]+\\.workers\\.dev$', 'Worker URL override host restriction');
 includes(html, 'mailto:benjiz@gmail.com', 'support mailto');
 includes(html, 'benji@ijneb.dev', 'visible support email');
 

@@ -1,8 +1,11 @@
+const interim = process.argv.includes('--interim');
+const envApiUrl = process.env.PREPAIRED_API_URL || '';
 const appHost = 'prepaired.ijneb.dev';
 const apiHost = 'api.prepaired.ijneb.dev';
 const previewUrl = 'https://ijnebzor.github.io/prepaired/';
-const appUrl = `https://${appHost}/`;
-const apiUrl = `https://${apiHost}`;
+const appUrl = interim ? previewUrl : `https://${appHost}/`;
+const apiUrl = interim ? envApiUrl.replace(/\/$/, '') : `https://${apiHost}`;
+const appOrigin = new URL(appUrl).origin;
 
 const whopLinks = [
   'https://whop.com/joined/prepaired/products/1-credit-1-interview/',
@@ -36,6 +39,11 @@ function answers(record) {
 }
 
 async function checkDns() {
+  if (interim) {
+    pass('Interim mode skips custom-domain DNS checks', 'using GitHub Pages preview + PREPAIRED_API_URL');
+    return;
+  }
+
   const ns = answers(await dns('ijneb.dev', 'NS')).map(value => value.toLowerCase());
   if (ns.some(value => value.includes('cloudflare.com'))) {
     pass('ijneb.dev is using Cloudflare nameservers', ns.join(', '));
@@ -78,19 +86,26 @@ async function checkStaticSite() {
     fail('GitHub Pages preview is not serving the app', `${preview.response.status} ${previewUrl}`);
   }
 
-  try {
-    const app = await fetchText(appUrl);
-    if (app.response.ok && app.text.includes('PrepAIred')) {
-      pass('Custom app domain is serving the app', `${app.response.status} ${appUrl}`);
-    } else {
-      fail('Custom app domain is not serving the app', `${app.response.status} ${appUrl}`);
+  if (!interim) {
+    try {
+      const app = await fetchText(appUrl);
+      if (app.response.ok && app.text.includes('PrepAIred')) {
+        pass('Custom app domain is serving the app', `${app.response.status} ${appUrl}`);
+      } else {
+        fail('Custom app domain is not serving the app', `${app.response.status} ${appUrl}`);
+      }
+    } catch (error) {
+      fail('Custom app domain is not reachable', error.message);
     }
-  } catch (error) {
-    fail('Custom app domain is not reachable', error.message);
   }
 }
 
 async function checkApi() {
+  if (interim && !/^https:\/\/prepaired-api\.[a-z0-9-]+\.workers\.dev$/i.test(apiUrl)) {
+    fail('Interim API URL is missing or not allowed', 'set PREPAIRED_API_URL=https://prepaired-api.<account-subdomain>.workers.dev');
+    return;
+  }
+
   try {
     const health = await fetchText(`${apiUrl}/health`);
     if (health.response.ok && health.text.trim() === '{"status":"ok","version":"2.0.0"}') {
@@ -107,13 +122,13 @@ async function checkApi() {
     const response = await fetch(`${apiUrl}/auth/request-otp`, {
       method: 'OPTIONS',
       headers: {
-        Origin: appUrl.slice(0, -1),
+        Origin: appOrigin,
         'Access-Control-Request-Method': 'POST',
         'Access-Control-Request-Headers': 'Content-Type',
       },
     });
     const allowOrigin = response.headers.get('access-control-allow-origin');
-    if (response.ok && allowOrigin === appUrl.slice(0, -1)) {
+    if (response.ok && allowOrigin === appOrigin) {
       pass('API CORS preflight passed', allowOrigin);
     } else {
       fail('API CORS preflight failed', `${response.status} allow-origin=${allowOrigin || 'missing'}`);

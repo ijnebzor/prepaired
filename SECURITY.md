@@ -41,9 +41,12 @@ script-src 'unsafe-inline'
 style-src 'unsafe-inline' https://fonts.googleapis.com
 font-src https://fonts.gstatic.com
 connect-src https://api.groq.com https://api.prepaired.ijneb.dev
+            https://*.workers.dev
             https://fonts.googleapis.com https://fonts.gstatic.com
 img-src 'self' data:
 ```
+
+The `*.workers.dev` allowance exists for the next-week launch fallback path. The app code accepts a credit API override only when it is `https://api.prepaired.ijneb.dev` or a `https://prepaired-api.<account-subdomain>.workers.dev` hostname.
 
 `unsafe-inline` is accepted because PrepAIred is intentionally a single static HTML file without a build step.
 

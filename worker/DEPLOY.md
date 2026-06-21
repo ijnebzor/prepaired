@@ -6,6 +6,18 @@ Production API: `https://api.prepaired.ijneb.dev`
 
 Note: the production `custom_domain = true` route requires `ijneb.dev` to be an active Cloudflare zone. If the domain is still served from Google Cloud DNS, deploy the Worker to Workers.dev first or move the zone to Cloudflare before relying on `api.prepaired.ijneb.dev`.
 
+For the Workers.dev fallback, the app can be pointed at:
+
+```text
+https://ijnebzor.github.io/prepaired/?api=https%3A%2F%2Fprepaired-api.<account-subdomain>.workers.dev
+```
+
+The Whop webhook endpoint should match that Worker URL:
+
+```text
+https://prepaired-api.<account-subdomain>.workers.dev/webhook/whop
+```
+
 ## Install
 
 ```bash
@@ -64,6 +76,12 @@ After deployment, run the external launch gate from the repo root:
 
 ```bash
 node scripts/check-cutover.mjs
+```
+
+For a Workers.dev fallback deployment:
+
+```bash
+PREPAIRED_API_URL=https://prepaired-api.<account-subdomain>.workers.dev node scripts/check-cutover.mjs --interim
 ```
 
 ## Whop Webhook
