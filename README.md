@@ -2,7 +2,7 @@
 
 > Interview simulation that does not let you off easy.
 
-[![Live](https://img.shields.io/badge/Live-prepaired.ijneb.dev-00e5cc?style=flat-square)](https://prepaired.ijneb.dev)
+[![Live](https://img.shields.io/badge/Live-ijnebzor.github.io%2Fprepaired-00e5cc?style=flat-square)](https://ijnebzor.github.io/prepaired/)
 [![Version](https://img.shields.io/badge/Version-2.0.0-00e5cc?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 [![BYOK](https://img.shields.io/badge/Groq-BYOK%20Free-22c55e?style=flat-square)](#providers)
@@ -14,7 +14,9 @@ PrepAIred simulates a real interview or negotiation with an interviewer that pus
 
 ## Try It
 
-Live app: [prepaired.ijneb.dev](https://prepaired.ijneb.dev)
+Live preview: [ijnebzor.github.io/prepaired](https://ijnebzor.github.io/prepaired/)
+
+Launch domain: `prepaired.ijneb.dev` once the DNS record is in place.
 
 Local static run:
 

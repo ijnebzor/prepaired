@@ -12,6 +12,7 @@ API: `https://api.prepaired.ijneb.dev`
 
 - Add GitHub Pages custom domain:
   - `prepaired.ijneb.dev` CNAME to `ijnebzor.github.io`
+  - Once the DNS record resolves, add a root `CNAME` file containing `prepaired.ijneb.dev` or set the same custom domain in GitHub Pages.
 - Add Cloudflare Worker custom domain:
   - `api.prepaired.ijneb.dev` attached to Worker `prepaired-api`
 

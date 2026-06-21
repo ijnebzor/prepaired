@@ -26,7 +26,7 @@ const inlineScripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)]
 
 new Function(inlineScripts);
 
-includes(html, '<link rel="canonical" href="https://prepaired.ijneb.dev/">', 'canonical URL');
+includes(html, '<link rel="canonical" href="https://ijnebzor.github.io/prepaired/">', 'canonical URL');
 includes(html, '<link rel="icon" href="assets/prepaired-icon.svg" type="image/svg+xml">', 'favicon');
 includes(html, '<img src="assets/prepaired-icon.svg"', 'nav logo');
 includes(html, "var WORKER_URL = 'https://api.prepaired.ijneb.dev';", 'Worker URL');
@@ -34,8 +34,6 @@ includes(html, 'mailto:benjiz@gmail.com', 'support mailto');
 includes(html, 'benji@ijneb.dev', 'visible support email');
 
 for (const link of whopLinks) includes(html, link, 'index Whop link');
-
-assert.equal(read('CNAME').trim(), 'prepaired.ijneb.dev');
 
 for (const file of ['assets/prepaired-icon.svg', 'assets/prepaired-logo.svg']) {
   const svg = read(file);
@@ -53,6 +51,12 @@ for (const doc of ['README.md', 'SECURITY.md']) {
 }
 
 const launch = read('LAUNCH.md');
+const cnamePath = join(root, 'CNAME');
+if (fs.existsSync(cnamePath)) {
+  assert.equal(read('CNAME').trim(), 'prepaired.ijneb.dev');
+} else {
+  includes(launch, '`prepaired.ijneb.dev` CNAME to `ijnebzor.github.io`', 'launch CNAME instruction');
+}
 includes(launch, 'Forward to: `benjiz@gmail.com`', 'Mailgun forwarding target');
 includes(launch, 'Use `prepaired@ijneb.dev` for `FROM_EMAIL`.', 'Resend sender');
 
