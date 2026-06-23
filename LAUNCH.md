@@ -77,6 +77,12 @@ Alternatively, add these GitHub repository secrets and run the manual **Deploy W
 - `FROM_EMAIL`
 - `ADMIN_SECRET`
 
+The app-owned secrets (`SESSION_SECRET`, `FROM_EMAIL`, and `ADMIN_SECRET`) are already set for this repo. To set only the remaining vendor secrets without printing values, run:
+
+```bash
+scripts/set-vendor-secrets.sh
+```
+
 ### Whop
 
 Webhook endpoint:

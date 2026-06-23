@@ -79,6 +79,12 @@ Quick launch status check:
 node scripts/check-launch-status.mjs
 ```
 
+Set the remaining vendor GitHub secrets interactively:
+
+```bash
+scripts/set-vendor-secrets.sh
+```
+
 ## Tech
 
 | Thing | Choice |
